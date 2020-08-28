@@ -1,0 +1,20 @@
+p#notice
+  = notice
+h1
+  | Scores
+table
+  tbody
+    - @scores.each do |score|
+      tr
+        td
+          = score.title
+        td
+          = link_to 'Show', score
+        td
+          = link_to 'Edit', edit_score_path(score)
+        td
+          = link_to 'Destroy', score, method: :delete, data: { confirm: 'Are you sure?' }
+br
+
+#js-index-score(data-first-measure="#{true}")
+= link_to 'New Score', new_score_path

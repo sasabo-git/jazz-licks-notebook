@@ -1,0 +1,15 @@
+p#notice
+  = notice
+p
+  strong
+    | Title:
+  = @score.title
+p
+  strong
+    | body:
+  = @score.body
+#js-show-score(data-score-id="#{@score.id}", data-first-measure="#{false}")
+
+= link_to 'Edit', edit_score_path(@score)
+|  | 
+= link_to 'Back', scores_path
