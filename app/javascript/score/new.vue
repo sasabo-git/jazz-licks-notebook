@@ -3,19 +3,26 @@
     .form
       p タイトル
       input(v-model='title')
+      p 主音
+      select(v-model='keynote')
+        option(v-for='keynote in allTones')
+          | {{ keynote }}
       p メジャー or マイナー
       select(v-model='tonality')
         option(v-for='tonality in tonalities', v-bind:value='tonality.value')
           | {{ tonality.text }}
-      p 主音
-      select(v-model='keynote')
-        option(v-for='keynote in keynotes')
-          | {{ keynote }}
       p コード進行
       select(v-model='chordProgression')
         option(v-for='progression in chordProgressions', v-bind:value='progression.value')
           | {{ progression.text }}
-      p {{ chords }}
+
+      p 作曲ガイド
+      input#chordTones(type='checkbox', value='ChordTone', v-model='checkedGuides')
+      | コードトーン
+      input#seventh(type='checkbox', value='Seventh', v-model='checkedGuides')
+      | 7th
+      #guide
+
       p メロディー
       textarea(v-model='melody')
       p ABC記譜法(表示のみで編集不可）
@@ -43,7 +50,7 @@ export default {
         { text: 'メジャー', value: 'major' },
         { text: 'マイナー', value: 'minor' },
       ],
-      keynotes: [
+      allTones: [
         'C',
         'Db',
         'D',
@@ -57,11 +64,14 @@ export default {
         'Bb',
         'B',
       ],
+      sevenTones: ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
       chordProgressions: [
         { text: '自由', value: 'free' },
         { text: '2-5-1', value: '2-5-1' },
       ],
+      checkedGuides: [],
       editor: {},
+      guide: {},
     }
   },
   computed: {
@@ -99,33 +109,35 @@ export default {
       }
       return target
     },
-    twelveTone: function () {
-      if (this.keynote) {
-        var target = []
-        if (this.keynote === 'C') {
-          target = this.keynotes
-        } else {
-          const index = this.keynotes.indexOf(this.keynote)
-          target = this.keynotes
-            .slice(index)
-            .concat(this.keynotes.slice(0, index))
-        }
-      }
+    twelveTones: function () {
+      var target = []
+      if (this.keynote) target = this.sortByKey(this.allTones, this.keynote)
       return target
     },
     twoFive: function () {
       var target = []
-      if (this.twelveTone) {
-        target.push(`"${this.twelveTone[7]}7"`)
+      if (this.twelveTones) {
+        target.push(`"${this.twelveTones[7]}7"`)
         if (this.tonality === 'major') {
-          target.unshift(`"${this.twelveTone[2]}m7"`)
-          target.push(`"${this.twelveTone[0]}maj"`)
+          target.unshift(`"${this.twelveTones[2]}m7"`)
+          target.push(`"${this.twelveTones[0]}maj"`)
         } else {
-          target.unshift(`"${this.twelveTone[2]}m7(b5)"`)
-          target.push(`"${this.twelveTone[0]}m"`)
+          target.unshift(`"${this.twelveTones[2]}m7(b5)"`)
+          target.push(`"${this.twelveTones[0]}m7"`)
         }
       }
       return target
+    },
+    guideTones: function () {
+      var body = []
+      if (this.twoFive.length && this.checkedGuides.length) {
+        if (this.checkedGuides.some((guide) => guide === 'ChordTone')) {
+          this.twoFive.forEach((code) => {
+            body.push(code + this.diatonicCodeTone(code))
+          })
+        }
+      }
+      return `K:${this.key}\n` + body.join('|')
     },
     body: {
       get: function () {
@@ -147,6 +159,9 @@ export default {
   watch: {
     tune: _.debounce(function () {
       this.editor.fireChanged()
+    }, 300),
+    guideTones: _.debounce(function () {
+      abcjs.renderAbc('guide', this.guideTones)
     }, 300),
   },
   mounted: function () {
@@ -190,6 +205,16 @@ export default {
         body: this.body,
       }
     },
+    sortByKey: function (tones, keynote) {
+      var target = []
+      if (keynote === 'C') {
+        target = tones.concat()
+      } else {
+        const index = tones.indexOf(keynote)
+        target = tones.slice(index).concat(tones.slice(0, index))
+      }
+      return target
+    },
     tuneElements: function (abcjs) {
       const elements = abcjs.split('\n')
       var body = ''
@@ -207,6 +232,25 @@ export default {
         }
       })
       self.body = body
+    },
+    diatonicCodeTone: function (code) {
+      var octaveUp = false
+      const keynote = code.match(/[A-Z]/g).join('')
+      const diatonic = this.sortByKey(this.sevenTones, this.keynote)
+
+      const scales = this.sortByKey(diatonic, keynote).map(function (tone, i) {
+        if (i > 0 && tone === 'C') octaveUp = true
+        return octaveUp ? tone.toLowerCase() : tone
+      })
+      return `${scales[0]}${scales[2]}${scales[4]}${scales[6]}`
+      // var codeType = { seventh: false, minor7th: false, major7th: false }
+      // if (/maj/.test(code)) {
+      //   codeType.major7th = true
+      // } else if (/m7/.test(code)) {
+      //   codeType.minor7th = true
+      // } else if (/7/.test(code)) {
+      //   codeType.seventh = true
+      // }
     },
     async createScore() {
       if (!this.title || !this.body) {
