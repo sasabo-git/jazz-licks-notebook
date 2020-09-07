@@ -1,8 +1,23 @@
 <template lang="pug">
-  .scores
-    template(v-for="paper in papers")
-      div(v-bind:id="paper")
+  table.scores
+    thead
+      tr
+        th タイトル
+        th コード進行
+        th 譜面
+        th
+    tbody
+      tr.score(v-for="(paper, index) in papers" )
+        td.title
+          | {{ titles[index] }}
+        td.chord-progression
+          | {{ chordProgressions[index] }}
+        td.paper(v-bind:id="paper")
+        td
+          a.link(:href="'/scores/' + ids[index]")
+            | 詳細
 </template>
+
 <script>
 import abcjs from 'abcjs'
 
@@ -14,6 +29,9 @@ export default {
     return {
       papers: [],
       abcString: '',
+      ids: [],
+      titles: [],
+      chordProgressions: [],
     }
   },
   async created() {
@@ -39,6 +57,9 @@ export default {
         })
         .then((scores) => {
           scores.forEach((score, i) => {
+            this.$set(this.ids, i, score.id)
+            this.$set(this.titles, i, score.title)
+            this.$set(this.chordProgressions, i, score.chord_progression)
             this.papers.push(`paper${i}`)
             this.abcString += this.toAbcString(score, this.firstLine)
           })
@@ -48,17 +69,17 @@ export default {
         })
     },
     toAbcString: function (score, firstLine = false) {
-      var target = ''
+      var header = ''
       var body = ''
-      target += 'X:1\n'
+      header += 'X:1\n'
       Object.keys(score).forEach(function (key) {
         if (score[key]) {
           switch (key) {
-            case 'title':
-              target += `T:${score[key]}\n`
-              break
             case 'key':
-              target += `K:${score[key]}\n`
+              header += `K:${score[key]}\n`
+              break
+            case 'meter':
+              header += `M:${score[key]}\n`
               break
             case 'body':
               if (firstLine) {
@@ -70,8 +91,7 @@ export default {
           }
         }
       })
-      target += body + '\n'
-      return target
+      return header + body + '\n'
     },
     token() {
       const meta = document.querySelector('meta[name="csrf-token"]')

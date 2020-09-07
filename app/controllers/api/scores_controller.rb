@@ -28,6 +28,6 @@ class Api::ScoresController < Api::BaseController
     end
 
     def score_params
-      params.require(:score).permit(:title, :key, :body)
+      params.require(:score).permit(:title, :key, :meter, :body, :chord_progression, :memo)
     end
 end

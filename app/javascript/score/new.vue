@@ -1,46 +1,72 @@
 <template lang="pug">
-  body
+  .create-new-score
     .form
-      p タイトル
-      input(v-model='title')
-      p 主音
-      select(v-model='keynote')
-        option(v-for='keynote in allTones')
-          | {{ keynote }}
-      p メジャー or マイナー
-      select(v-model='tonality')
-        option(v-for='tonality in tonalities', v-bind:value='tonality.value')
-          | {{ tonality.text }}
-      p コード進行
-      select(v-model='chordProgression')
-        option(v-for='progression in chordProgressions', v-bind:value='progression.value')
-          | {{ progression.text }}
-      p 拍子
-      input(v-model='meter')
-      p 基本音符長
-      input(v-model='noteLength')
-      | 分音符
-      template
-        p bpm
-          .box
-            input(v-model='bpm', @input='clearErrorMsg')
+      .title
+        .label タイトル
+        .input
+          input(v-model='title')
+      .key
+        .label キー
+          .keynote
+            .label 主音
+            .select
+              select(v-model='keynote')
+                option(v-for='keynote in allTones')
+                  | {{ keynote }}
+          .tonality
+            .label メジャー or マイナー
+            .select
+              select(v-model='tonality')
+                option(v-for='tonality in tonalities', v-bind:value='tonality.value')
+                  | {{ tonality.text }}
+      .chord-progression
+        .label コード進行
+        .select
+          select(v-model='chordProgression')
+            option(v-for='progression in chordProgressions', v-bind:value='progression.value')
+              | {{ progression.text }}
+      .meter
+        .input
+          input(v-model='meter')
+          | 拍子
+      .abc-setting
+        .notelength
+          .label 基本音符長
+          .input
+            input(v-model='noteLength')
+            | 分音符
+        .bpm
+          .input
+            input.bpm(v-model='bpm', @input='clearErrorMsg')
+            | bpm
+          .error-message
             span(style='color: red; margin-left: 20px;') {{ errorMsg }}
-          vue-slider(v-model='bpm', :min='min', :max='max', :tooltip="errorMsg ? 'none' : 'always'", :marks='[40, 350]', @error='error', @change='clearErrorMsg')
-
-      br
-      p 作曲ガイド
-      input#chordTones(type='checkbox', value='ChordTone', v-model='checkedGuides')
-      | コードトーン
-      input#seventh(type='checkbox', value='Seventh', v-model='checkedGuides')
-      | 7th
-      #guide
-
-      p メロディー
-      textarea(v-model='melody')
-      p ABC記譜法(表示のみで編集不可）
-      textarea(readonly)#abc-source(v-model='tune')
-      #paper
-      #midi
+          .slider
+            vue-slider(v-model='bpm', :min='min', :max='max', :tooltip="errorMsg ? 'none' : 'always'", :marks='[40, 350]', @error='error', @change='clearErrorMsg')
+      .abc-paper
+        textarea(readonly)#abc-source(v-model='tune')
+        #paper
+        #midi
+      .melody
+        .label メロディー
+        .textarea
+          textarea(v-model='melody')
+      .memo
+        .label メモ
+          .textarea
+            textarea(v-model='memo')
+    .guide
+      .label 作曲ガイド
+      .check-boxes
+        .code_tone
+          input#chordTones(type='checkbox', value='ChordTone', v-model='checkedGuides')
+          | コードトーン
+        .seventh
+          input#seventh(type='checkbox', value='Seventh', v-model='checkedGuides')
+          | 7th
+      .abc-guide
+        #guide
+    .submit
       button(@click="createScore" type="button")
         | 保存
 </template>
@@ -70,6 +96,7 @@ export default {
       tonality: '',
       keynote: '',
       chordProgression: '',
+      memo: '',
       melody: '',
       meter: '4/4',
       noteLength: '8',
@@ -250,7 +277,6 @@ export default {
         return octaveUp ? tone.toLowerCase() : tone
       })
       return `${scales[0]}${scales[2]}${scales[4]}${scales[6]}`
-      // }
     },
     async createScore() {
       if (!this.title || !this.body) {
@@ -259,7 +285,10 @@ export default {
       const params = {
         title: this.title,
         key: this.key,
-        body: `M:${this.meter}\n` + this.body,
+        meter: this.meter,
+        body: this.body,
+        chord_progression: this.chordProgression, // eslint-disable-line camelcase
+        memo: this.memo,
       }
       await fetch(`/api/scores`, {
         method: 'POST',
@@ -277,6 +306,9 @@ export default {
         })
         .catch((error) => {
           console.warn('Failed to parsing', error)
+        })
+        .then((data) => {
+          location.href = `/scores/${data.id}`
         })
     },
     token() {
