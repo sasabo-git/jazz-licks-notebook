@@ -75,6 +75,9 @@ export default {
       Object.keys(score).forEach(function (key) {
         if (score[key]) {
           switch (key) {
+            case 'title':
+              if (!firstLine) header += `T:${score[key]}\n`
+              break
             case 'key':
               header += `K:${score[key]}\n`
               break

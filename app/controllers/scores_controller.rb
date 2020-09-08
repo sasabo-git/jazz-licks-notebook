@@ -1,5 +1,5 @@
 class ScoresController < ApplicationController
-  before_action :set_score, only: [:show, :destroy]
+  before_action :set_score, only: [:show, :edit, :destroy]
 
   def index
     @scores = Score.all

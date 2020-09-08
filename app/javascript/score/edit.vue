@@ -1,5 +1,5 @@
 <template lang="pug">
-  .create-new-score
+  .edit-score
     .form
       .title
         .label タイトル
@@ -67,9 +67,10 @@
       .abc-guide
         #guide
     .submit
-      button(@click="createScore" type="button")
+      button(@click="editScore" type="button")
         | 保存
 </template>
+
 <script>
 import 'font-awesome/css/font-awesome.min.css'
 import 'abcjs/abcjs-midi.css'
@@ -89,6 +90,9 @@ const ERROR_TYPE = {
 export default {
   components: {
     VueSlider,
+  },
+  props: {
+    scoreId: { type: String, required: true },
   },
   data() {
     return {
@@ -217,7 +221,12 @@ export default {
             Array.prototype.push.apply(target, this.chords.slice(length))
           }
         }
-        return !target.length ? '|' : target.join('|') + '|'
+        return !target.length ? '|' : target.join('|')
+      },
+      set: function (value) {
+        console.log(value)
+        this.melody = value.replace(/".*?"/g, '')
+        console.log(this.melody)
       },
     },
   },
@@ -229,6 +238,9 @@ export default {
       abcjs.renderAbc('guide', this.guideTones)
     }, 300),
   },
+  async created() {
+    await this.setScore()
+  },
   mounted: function () {
     /* eslint-disable */
     this.editor = new abcjs.Editor('abc-source', {
@@ -239,6 +251,49 @@ export default {
     /* eslint-enable */
   },
   methods: {
+    async setScore() {
+      await fetch(`/api/scores/${this.scoreId}.json`, {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-Token': this.token(),
+        },
+        credentials: 'same-origin',
+      })
+        .then((response) => {
+          return response.json()
+        })
+        .then((score) => {
+          var header = ''
+          var body = ''
+          const self = this
+          Object.keys(score).forEach(function (key) {
+            if (score[key]) {
+              switch (key) {
+                case 'title':
+                  header += `T:${score[key]}\n`
+                  break
+                case 'key':
+                  header += `K:${score[key]}\n`
+                  break
+                case 'meter':
+                  header += `M:${score[key]}\n`
+                  break
+                case 'chord_progression':
+                  self.chordProgression = score[key]
+                  break
+                case 'body':
+                  body = `${score[key]}\n`
+              }
+            }
+          })
+          this.tune = header + body
+          console.log(this.tune)
+        })
+        .catch((error) => {
+          console.warn('Failed to parsing', error)
+        })
+    },
     sortByKey: function (tones, keynote) {
       var target = []
       if (keynote === 'C') {
@@ -259,6 +314,8 @@ export default {
           self.title = element.replace(/T:/, '')
         } else if (/^K:.+/.test(element)) {
           self.key = element.replace(/K:/, '')
+        } else if (/^M:.+/.test(element)) {
+          self.meter = element.replace(/M:/, '')
         } else {
           if (newLineFlag) body += '\n'
           body += element
@@ -278,7 +335,7 @@ export default {
       })
       return `${scales[0]}${scales[2]}${scales[4]}${scales[6]}`
     },
-    async createScore() {
+    async editScore() {
       if (!this.title || !this.body) {
         return null
       }
@@ -290,8 +347,8 @@ export default {
         chord_progression: this.chordProgression, // eslint-disable-line camelcase
         memo: this.memo,
       }
-      await fetch(`/api/scores`, {
-        method: 'POST',
+      await fetch(`/api/scores/${this.scoreId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
           'X-Requested-With': 'XMLHttpRequest',
@@ -302,13 +359,13 @@ export default {
         body: JSON.stringify(params),
       })
         .then((response) => {
-          return response.json()
+          return response
         })
         .catch((error) => {
           console.warn('Failed to parsing', error)
         })
         .then((data) => {
-          location.href = `/scores/${data.id}`
+          location.href = `/scores/${this.scoreId}`
         })
     },
     token() {

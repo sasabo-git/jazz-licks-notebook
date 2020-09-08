@@ -1,15 +1,18 @@
 p#notice
   = notice
-p
-  strong
-    | Title:
-  = @score.title
-p
-  strong
-    | body:
-  = @score.body
-#js-show-score(data-score-id="#{@score.id}", data-first-measure="#{false}")
-
-= link_to 'Edit', edit_score_path(@score)
-|  | 
-= link_to 'Back', scores_path
+h1
+  | Score
+.score
+  #js-show-score(data-score-id="#{@score.id}", data-first-measure="#{false}")
+.memo
+  - if @score.memo.present?
+    .label
+      | メモ
+    .memo-text
+      = @score.memo
+.page-actions
+  = link_to 'Edit', edit_score_path(@score)
+  |  | 
+  = link_to 'Delete', @score, method: :delete, data: { confirm: 'Are you sure?'}
+  |  | 
+  = link_to 'Back', scores_path

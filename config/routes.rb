@@ -2,6 +2,6 @@ Rails.application.routes.draw do
   resources :scores
 
   namespace "api" do
-    resources :scores, only: %i(index create show)
+    resources :scores, only: %i(index create show update)
   end
 end

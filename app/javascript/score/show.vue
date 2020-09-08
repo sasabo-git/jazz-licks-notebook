@@ -1,9 +1,20 @@
 <template lang="pug">
-  .show-score
-    #paper
+  .score-and-player
+    .score
+      #paper
+    .midi
+      #midi-id
+    .key-controle
+      button(v-on:click='transpose += 1') キーを上げる
+      button(v-on:click='transpose = 0') 原曲キー
+      button(v-on:click='transpose -= 1') キーを下げる
 </template>
+
 <script>
-import abcjs from 'abcjs'
+import 'font-awesome/css/font-awesome.min.css'
+import 'abcjs/abcjs-midi.css'
+import abcjs from 'abcjs/midi'
+import _ from 'lodash'
 
 export default {
   props: {
@@ -13,7 +24,13 @@ export default {
   data() {
     return {
       score: '',
+      transpose: 0,
     }
+  },
+  watch: {
+    transpose: _.debounce(function () {
+      this.renderScore(this.score, this.transpose)
+    }, 100),
   },
   async created() {
     await this.setScore()
@@ -33,23 +50,39 @@ export default {
         })
         .then((json) => {
           this.score = this.toAbcString(json, this.firstLine)
-          abcjs.renderAbc('paper', this.score) // eslint-disable-line camelcase
+          this.renderScore(this.score, this.transpose)
         })
         .catch((error) => {
           console.warn('Failed to parsing', error)
         })
     },
+    renderScore: function (score, transpose) {
+      abcjs.renderAbc('paper', score, {
+        visualTranspose: transpose,
+      })
+      abcjs.renderMidi('midi-id', score, {
+        midiTranspose: transpose,
+        inlineControls: {
+          loopToggle: true,
+          tempo: true,
+        },
+      })
+    },
     toAbcString: function (score, firstLine = false) {
-      var target = ''
+      var header = ''
       var body = ''
+      header += 'X:1\n'
       Object.keys(score).forEach(function (key) {
         if (score[key]) {
           switch (key) {
             case 'title':
-              target += `T:${score[key]}\n`
+              if (!firstLine) header += `T:${score[key]}\n`
               break
             case 'key':
-              target += `K:${score[key]}\n`
+              header += `K:${score[key]}\n`
+              break
+            case 'meter':
+              header += `M:${score[key]}\n`
               break
             case 'body':
               if (firstLine) {
@@ -61,8 +94,7 @@ export default {
           }
         }
       })
-      target += body
-      return target
+      return header + body + '\n'
     },
     token() {
       const meta = document.querySelector('meta[name="csrf-token"]')
