@@ -84,17 +84,20 @@ export default {
             case 'meter':
               header += `M:${score[key]}\n`
               break
+            case 'bpm':
+              header += `Q:${score[key]}\n`
+              break
             case 'body':
               if (firstLine) {
                 var lines = score[key].split('\n')
                 body = lines[0]
               } else {
-                body = `${score[key]}\n`
+                body = `${score[key]}`
               }
           }
         }
       })
-      return header + body + '\n'
+      return header + body
     },
     token() {
       const meta = document.querySelector('meta[name="csrf-token"]')

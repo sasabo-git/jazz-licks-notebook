@@ -170,13 +170,20 @@ export default {
       },
     },
     chords: function () {
-      var target = []
+      var chords = []
       switch (this.chordProgression) {
+        case '':
+        case 'free':
+          if (this.melody) {
+            const tmp = this.melody.match(/".*?"/g)
+            if (tmp) chords = tmp
+          }
+          break
         case '2-5-1':
-          target = this.twoFive
+          chords = this.twoFive
           break
       }
-      return target
+      return chords
     },
     twelveTones: function () {
       var target = []
@@ -199,9 +206,9 @@ export default {
     },
     guideTones: function () {
       var body = []
-      if (this.twoFive.length && this.checkedGuides.length) {
+      if (this.chords.length && this.checkedGuides.length) {
         if (this.checkedGuides.some((guide) => guide === 'ChordTone')) {
-          this.twoFive.forEach((code) => {
+          this.chords.forEach((code) => {
             body.push(code + this.diatonicCodeTone(code))
           })
         }
@@ -224,9 +231,7 @@ export default {
         return !target.length ? '|' : target.join('|')
       },
       set: function (value) {
-        console.log(value)
         this.melody = value.replace(/".*?"/g, '')
-        console.log(this.melody)
       },
     },
   },
@@ -279,16 +284,18 @@ export default {
                 case 'meter':
                   header += `M:${score[key]}\n`
                   break
+                case 'bpm':
+                  header += `Q:${score[key]}\n`
+                  break
                 case 'chord_progression':
                   self.chordProgression = score[key]
                   break
                 case 'body':
-                  body = `${score[key]}\n`
+                  body = `${score[key]}`
               }
             }
           })
           this.tune = header + body
-          console.log(this.tune)
         })
         .catch((error) => {
           console.warn('Failed to parsing', error)
@@ -316,6 +323,8 @@ export default {
           self.key = element.replace(/K:/, '')
         } else if (/^M:.+/.test(element)) {
           self.meter = element.replace(/M:/, '')
+        } else if (/^Q:.+/.test(element)) {
+          self.bpm = element.replace(/Q:/, '')
         } else {
           if (newLineFlag) body += '\n'
           body += element
@@ -344,6 +353,7 @@ export default {
         key: this.key,
         meter: this.meter,
         body: this.body,
+        bpm: this.bpm,
         chord_progression: this.chordProgression, // eslint-disable-line camelcase
         memo: this.memo,
       }

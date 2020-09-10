@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_06_111132) do
+ActiveRecord::Schema.define(version: 2020_09_10_043211) do
 
   create_table "scores", force: :cascade do |t|
     t.text "title", null: false
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 2020_09_06_111132) do
     t.string "meter"
     t.string "chord_progression"
     t.text "memo"
+    t.integer "bpm"
   end
 
 end

@@ -93,8 +93,8 @@ export default {
   data() {
     return {
       title: '',
-      tonality: '',
-      keynote: '',
+      tonality: 'major',
+      keynote: 'C',
       chordProgression: '',
       memo: '',
       melody: '',
@@ -166,13 +166,20 @@ export default {
       },
     },
     chords: function () {
-      var target = []
+      var chords = []
       switch (this.chordProgression) {
+        case '':
+        case 'free':
+          if (this.melody) {
+            const tmp = this.melody.match(/".*?"/g)
+            if (tmp) chords = tmp
+          }
+          break
         case '2-5-1':
-          target = this.twoFive
+          chords = this.twoFive
           break
       }
-      return target
+      return chords
     },
     twelveTones: function () {
       var target = []
@@ -195,9 +202,9 @@ export default {
     },
     guideTones: function () {
       var body = []
-      if (this.twoFive.length && this.checkedGuides.length) {
+      if (this.chords.length && this.checkedGuides.length) {
         if (this.checkedGuides.some((guide) => guide === 'ChordTone')) {
-          this.twoFive.forEach((code) => {
+          this.chords.forEach((code) => {
             body.push(code + this.diatonicCodeTone(code))
           })
         }
@@ -259,6 +266,10 @@ export default {
           self.title = element.replace(/T:/, '')
         } else if (/^K:.+/.test(element)) {
           self.key = element.replace(/K:/, '')
+        } else if (/^M:.+/.test(element)) {
+          self.meter = element.replace(/M:/, '')
+        } else if (/^Q:.+/.test(element)) {
+          self.bpm = element.replace(/Q:/, '')
         } else {
           if (newLineFlag) body += '\n'
           body += element
@@ -286,6 +297,7 @@ export default {
         title: this.title,
         key: this.key,
         meter: this.meter,
+        bpm: this.bpm,
         body: this.body,
         chord_progression: this.chordProgression, // eslint-disable-line camelcase
         memo: this.memo,
