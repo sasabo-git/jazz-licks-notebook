@@ -1,5 +1,5 @@
 <template lang="pug">
-  .create-new-score
+  .form-score
     .form
       .title
         .label タイトル
@@ -67,9 +67,10 @@
       .abc-guide
         #guide
     .submit
-      button(@click="createScore" type="button")
+      button(@click="saveOrUpdate" type="button")
         | 保存
 </template>
+
 <script>
 import 'font-awesome/css/font-awesome.min.css'
 import 'abcjs/abcjs-midi.css'
@@ -89,6 +90,9 @@ const ERROR_TYPE = {
 export default {
   components: {
     VueSlider,
+  },
+  props: {
+    scoreId: { type: String, required: true },
   },
   data() {
     return {
@@ -224,7 +228,10 @@ export default {
             Array.prototype.push.apply(target, this.chords.slice(length))
           }
         }
-        return !target.length ? '|' : target.join('|') + '|'
+        return !target.length ? '|' : target.join('|')
+      },
+      set: function (value) {
+        this.melody = value.replace(/".*?"/g, '')
       },
     },
   },
@@ -236,6 +243,9 @@ export default {
       abcjs.renderAbc('guide', this.guideTones)
     }, 300),
   },
+  async created() {
+    if (this.scoreId !== 'new') await this.setScore()
+  },
   mounted: function () {
     /* eslint-disable */
     this.editor = new abcjs.Editor('abc-source', {
@@ -246,6 +256,51 @@ export default {
     /* eslint-enable */
   },
   methods: {
+    async setScore() {
+      await fetch(`/api/scores/${this.scoreId}.json`, {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-Token': this.token(),
+        },
+        credentials: 'same-origin',
+      })
+        .then((response) => {
+          return response.json()
+        })
+        .then((score) => {
+          var header = ''
+          var body = ''
+          const self = this
+          Object.keys(score).forEach(function (key) {
+            if (score[key]) {
+              switch (key) {
+                case 'title':
+                  header += `T:${score[key]}\n`
+                  break
+                case 'key':
+                  header += `K:${score[key]}\n`
+                  break
+                case 'meter':
+                  header += `M:${score[key]}\n`
+                  break
+                case 'bpm':
+                  header += `Q:${score[key]}\n`
+                  break
+                case 'chord_progression':
+                  self.chordProgression = score[key]
+                  break
+                case 'body':
+                  body = `${score[key]}`
+              }
+            }
+          })
+          this.tune = header + body
+        })
+        .catch((error) => {
+          console.warn('Failed to parsing', error)
+        })
+    },
     sortByKey: function (tones, keynote) {
       var target = []
       if (keynote === 'C') {
@@ -289,38 +344,48 @@ export default {
       })
       return `${scales[0]}${scales[2]}${scales[4]}${scales[6]}`
     },
-    async createScore() {
-      if (!this.title || !this.body) {
+    async saveOrUpdate() {
+      const self = this
+      var id = ''
+      var method = 'POST'
+      if (self.scoreId !== 'new') {
+        id = `/${self.scoreId}`
+        method = 'PUT'
+      }
+
+      if (!self.title || !self.body) {
+        // ここにメッセージを出したい
         return null
       }
       const params = {
-        title: this.title,
-        key: this.key,
-        meter: this.meter,
-        bpm: this.bpm,
-        body: this.body,
-        chord_progression: this.chordProgression, // eslint-disable-line camelcase
-        memo: this.memo,
+        title: self.title,
+        key: self.key,
+        meter: self.meter,
+        body: self.body,
+        bpm: self.bpm,
+        chord_progression: self.chordProgression, // eslint-disable-line camelcase
+        memo: self.memo,
       }
-      await fetch(`/api/scores`, {
-        method: 'POST',
+      await fetch(`/api/scores${id}`, {
+        method: `${method}`,
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
           'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-Token': this.token(),
+          'X-CSRF-Token': self.token(),
         },
         credentials: 'same-origin',
         redirect: 'manual',
         body: JSON.stringify(params),
       })
         .then((response) => {
-          return response.json()
+          return self.scoreId === 'new' ? response.json() : response
         })
         .catch((error) => {
           console.warn('Failed to parsing', error)
         })
         .then((data) => {
-          location.href = `/scores/${data.id}`
+          if (!id) id = data.id
+          location.href = `/scores/${id}`
         })
     },
     token() {

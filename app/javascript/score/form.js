@@ -1,8 +1,8 @@
 import Vue from 'vue'
-import ShowScore from './edit.vue'
+import ShowScore from './form.vue'
 
 document.addEventListener('DOMContentLoaded', () => {
-  const score = document.getElementById('js-edit-score')
+  const score = document.getElementById('js-form-score')
   if (score) {
     const scoreId = score.getAttribute('data-score-id')
     new Vue({
@@ -12,6 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
             scoreId: scoreId,
           },
         }),
-    }).$mount('#js-edit-score')
+    }).$mount('#js-form-score')
   }
 })
