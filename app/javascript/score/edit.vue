@@ -67,7 +67,7 @@
       .abc-guide
         #guide
     .submit
-      button(@click="editScore" type="button")
+      button(@click="saveOrUpdate" type="button")
         | 保存
 </template>
 
@@ -97,8 +97,8 @@ export default {
   data() {
     return {
       title: '',
-      tonality: '',
-      keynote: '',
+      tonality: 'major',
+      keynote: 'C',
       chordProgression: '',
       memo: '',
       melody: '',
@@ -244,7 +244,7 @@ export default {
     }, 300),
   },
   async created() {
-    await this.setScore()
+    if (this.scoreId !== 'new') await this.setScore()
   },
   mounted: function () {
     /* eslint-disable */
@@ -344,38 +344,48 @@ export default {
       })
       return `${scales[0]}${scales[2]}${scales[4]}${scales[6]}`
     },
-    async editScore() {
-      if (!this.title || !this.body) {
+    async saveOrUpdate() {
+      const self = this
+      var id = ''
+      var method = 'POST'
+      if (self.scoreId !== 'new') {
+        id = `/${self.scoreId}`
+        method = 'PUT'
+      }
+
+      if (!self.title || !self.body) {
+        // ここにメッセージを出したい
         return null
       }
       const params = {
-        title: this.title,
-        key: this.key,
-        meter: this.meter,
-        body: this.body,
-        bpm: this.bpm,
-        chord_progression: this.chordProgression, // eslint-disable-line camelcase
-        memo: this.memo,
+        title: self.title,
+        key: self.key,
+        meter: self.meter,
+        body: self.body,
+        bpm: self.bpm,
+        chord_progression: self.chordProgression, // eslint-disable-line camelcase
+        memo: self.memo,
       }
-      await fetch(`/api/scores/${this.scoreId}`, {
-        method: 'PUT',
+      await fetch(`/api/scores${id}`, {
+        method: `${method}`,
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
           'X-Requested-With': 'XMLHttpRequest',
-          'X-CSRF-Token': this.token(),
+          'X-CSRF-Token': self.token(),
         },
         credentials: 'same-origin',
         redirect: 'manual',
         body: JSON.stringify(params),
       })
         .then((response) => {
-          return response
+          return self.scoreId === 'new' ? response.json() : response
         })
         .catch((error) => {
           console.warn('Failed to parsing', error)
         })
         .then((data) => {
-          location.href = `/scores/${this.scoreId}`
+          if (!id) id = data.id
+          location.href = `/scores/${id}`
         })
     },
     token() {
