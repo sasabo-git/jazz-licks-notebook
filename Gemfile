@@ -53,3 +53,4 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # not default
 gem 'slim'
 gem 'html2slim'
+gem 'devise'

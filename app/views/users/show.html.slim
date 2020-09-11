@@ -1,0 +1,13 @@
+.profile
+  h1 プロフィール
+  .username
+    | ユーザー名: 
+    = @user.username
+  .mail
+    | メール: 
+    = @user.email
+.link
+  .edit-profile
+  = link_to "プロフィールの編集", :edit_user_registration
+  .back
+  = link_to "スコア一覧", :scores

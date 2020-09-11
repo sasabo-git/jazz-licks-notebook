@@ -3,20 +3,19 @@
 class Api::ScoresController < Api::BaseController
   include Rails.application.routes.url_helpers
   before_action :set_score, only: %i(show update)
+  before_action :authenticate_user!
 
   def index
-    scores = Score.all
-    render json: scores
+    @scores = Score.all
   end
 
   def show
-    render json: @score
   end
 
   def create
-    score = Score.new(score_params)
-    if score.save
-      render json: score, status: :created
+    @score = current_user.scores.new(score_params)
+    if @score.save
+      render json: { status: :created, id: @score.id }
     else
       head :bad_request
     end

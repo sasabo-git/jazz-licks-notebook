@@ -154,15 +154,15 @@ export default {
     },
     key: {
       get: function () {
-        var target = ''
+        var key = ''
         if (this.keynote && this.tonality) {
           if (this.tonality === 'major') {
-            target = this.keynote
+            key = this.keynote
           } else {
-            target = `${this.keynote}m`
+            key = `${this.keynote}m`
           }
         }
-        return target
+        return key
       },
       set: function (value) {
         this.keynote = value.replace(/m/, '')
@@ -186,11 +186,13 @@ export default {
       return chords
     },
     twelveTones: function () {
+      // ここはkeynoteのsetterで作れるのでは？
       var target = []
       if (this.keynote) target = this.sortByKey(this.allTones, this.keynote)
       return target
     },
     twoFive: function () {
+      // ここもtwelveTonesのsetterで作れるのでは？
       var target = []
       if (this.twelveTones.length) {
         target.push(`"${this.twelveTones[7]}7"`)
@@ -205,6 +207,7 @@ export default {
       return target
     },
     guideTones: function () {
+      // ここも依存してる
       var body = []
       if (this.chords.length && this.checkedGuides.length) {
         if (this.checkedGuides.some((guide) => guide === 'ChordTone')) {
@@ -317,6 +320,7 @@ export default {
       var newLineFlag = false
       const self = this
       elements.forEach(function (element) {
+        // ここは関数化できそう
         if (/^T:.+/.test(element)) {
           self.title = element.replace(/T:/, '')
         } else if (/^K:.+/.test(element)) {
@@ -349,7 +353,7 @@ export default {
       var id = ''
       var method = 'POST'
       if (self.scoreId !== 'new') {
-        id = `/${self.scoreId}`
+        id = `${self.scoreId}`
         method = 'PUT'
       }
 
@@ -361,12 +365,12 @@ export default {
         title: self.title,
         key: self.key,
         meter: self.meter,
-        body: self.body,
         bpm: self.bpm,
+        body: self.body,
         chord_progression: self.chordProgression, // eslint-disable-line camelcase
         memo: self.memo,
       }
-      await fetch(`/api/scores${id}`, {
+      await fetch(`/api/scores/${id}`, {
         method: `${method}`,
         headers: {
           'Content-Type': 'application/json; charset=utf-8',

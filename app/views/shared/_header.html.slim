@@ -1,0 +1,11 @@
+body
+  header
+    .pull-right
+      - if user_signed_in?
+        .username
+          strong= current_user.username
+          | さん こんにちは
+        .profile
+          = link_to t('アカウント情報'), current_user, class: 'navbar-link'
+        .logout
+          = link_to t('ログアウト'), destroy_user_session_path, method: :delete, class: 'navbar-link'
