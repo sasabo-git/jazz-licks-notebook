@@ -74,7 +74,6 @@ import abcjs from 'abcjs/midi'
 import _ from 'lodash'
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
-import txt from '../../assets/texts/how-to-use-abc.txt'
 
 const ERROR_TYPE = {
   VALUE: 1,
@@ -247,9 +246,6 @@ export default {
       set: function (value) {
         this.melody = value.replace(/".*?"/g, '')
       },
-    },
-    descriptionAbc() {
-      return txt
     },
   },
   watch: {
