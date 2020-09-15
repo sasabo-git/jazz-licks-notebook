@@ -1,4 +1,7 @@
-h1
-  | New Score
-#js-form-score(data-score-id="new")
-= link_to 'Back', scores_path
+.container
+  header.page-header
+    h1.page-header__title
+      | New Score
+
+  #js-form-score(data-score-id="new")
+  = link_to 'Back', scores_path

@@ -1,74 +1,70 @@
 <template lang="pug">
-  .form-score
-    .form
-      .title
-        .label タイトル
-        .input
-          input(v-model='title')
-      .key
-        .label キー
+  .score-form
+    .music-form
+      .side-form
+        .key
+          .music-form__label キー
           .keynote
-            .label 主音
-            .select
-              select(v-model='keynote')
-                option(v-for='keynote in allTones')
-                  | {{ keynote }}
+            select(v-model='keynote')
+              option(v-for='keynote in allTones')
+                | {{ keynote }}
           .tonality
-            .label メジャー or マイナー
-            .select
-              select(v-model='tonality')
-                option(v-for='tonality in tonalities', v-bind:value='tonality.value')
-                  | {{ tonality.text }}
-      .chord-progression
-        .label コード進行
-        .select
+            select(v-model='tonality')
+              option(v-for='tonality in tonalities', v-bind:value='tonality.value')
+                | {{ tonality.text }}
+        .chord-progression
+          .music-form__label コード進行
           select(v-model='chordProgression')
             option(v-for='progression in chordProgressions', v-bind:value='progression.value')
               | {{ progression.text }}
-      .meter
-        .input
-          input(v-model='meter')
+        .meter
+          .music-form__label 拍子記号
+          input(v-model='meter').music-form__input-short
           | 拍子
-      .abc-setting
-        .notelength
-          .label 基本音符長
-          .input
-            input(v-model='noteLength')
-            | 分音符
         .bpm
-          .input
-            input.bpm(v-model='bpm', @input='clearErrorMsg')
-            | bpm
-          .error-message
-            span(style='color: red; margin-left: 20px;') {{ errorMsg }}
-          .slider
-            vue-slider(v-model='bpm', :min='min', :max='max', :tooltip="errorMsg ? 'none' : 'always'", :marks='[40, 350]', @error='error', @change='clearErrorMsg')
-      .abc-paper
-        textarea(readonly)#abc-source(v-model='tune')
-        #paper
-        #midi
-      .melody
-        .label メロディー
-        .textarea
-          textarea(v-model='melody')
-      .memo
-        .label メモ
-          .textarea
-            textarea(v-model='memo')
-    .guide
-      .label 作曲ガイド
-      .check-boxes
-        .code_tone
-          input#chordTones(type='checkbox', value='ChordTone', v-model='checkedGuides')
-          | コードトーン
-        .seventh
-          input#seventh(type='checkbox', value='Seventh', v-model='checkedGuides')
-          | 7th
-      .abc-guide
-        #guide
-    .submit
-      button(@click="saveOrUpdate" type="button")
-        | 保存
+          .music-form__label テンポ (40 ~ 350)
+          input.bpm(v-model='bpm', @input='clearErrorMsg').music-form__input-short
+          | bpm
+          //- .error-message
+          //-   span(style='color: red; margin-left: 20px;') {{ errorMsg }}
+        //- .bpm-slider
+        //-   vue-slider(v-model='bpm', :min='min', :max='max', :tooltip="errorMsg ? 'none' : 'always'", :marks='[40, 350]', @error='error', @change='clearErrorMsg')
+        .notelength
+          .music-form__label 基本音符長
+          input(v-model='noteLength').music-form__input-short
+          | 分音符
+        .guide
+          .music-form__label 作曲ガイド
+          //- input(type='checkbox', v-model='show')
+          //- button(@click='showGuide') ガイド項目の表示を切替
+          .check-boxes(v-show='show')
+            label(v-for='guide in guides')
+              input.guides(type='checkbox', :value='guide.value', v-model='checkedGuides')
+              | {{ guide.text }}
+      .main-form
+        .title
+          .music-form__label タイトル
+          input(v-model='title').music-form__input
+        .melody
+          .music-form__label メロディー
+          textarea(v-model='melody').music-form__textarea
+        .memo
+          .music-form__label メモ
+          textarea(v-model='memo').music-form__textarea
+        .how-to-write-abc
+          .music-form__label abc記譜法の書き方
+            .how-to-write-abc__text
+              | {{ descriptionAbc }}
+        .abc-paper
+          .hidden-text
+            textarea(readonly)#abc-source(v-model='tune')
+          #paper
+          #midi
+          .abc-guide
+            #guide
+        .submit
+          button(@click="saveOrUpdate" type="button")
+            | 保存
 </template>
 
 <script>
@@ -78,6 +74,7 @@ import abcjs from 'abcjs/midi'
 import _ from 'lodash'
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
+import txt from '../../assets/texts/how-to-use-abc.txt'
 
 const ERROR_TYPE = {
   VALUE: 1,
@@ -131,7 +128,19 @@ export default {
         { text: '自由', value: 'free' },
         { text: '2-5-1', value: '2-5-1' },
       ],
+      guides: [
+        { text: 'コードトーン', value: 'chordTone' },
+        { text: '9th', value: '9th' },
+        { text: '11th', value: '11th' },
+        { text: '#11th', value: '#11th' },
+        { text: '13th', value: '13th' },
+        { text: 'オルタード', value: 'artered' },
+        { text: 'hmp5↓', value: 'hmp5' },
+        { text: 'コンディミ', value: 'semitoneToneDiminished' },
+        { text: 'ホールトーン', value: 'wholeTone' },
+      ],
       checkedGuides: [],
+      show: true,
       editor: {},
       guide: {},
     }
@@ -156,7 +165,7 @@ export default {
       get: function () {
         var key = ''
         if (this.keynote && this.tonality) {
-          if (this.tonality === 'major') {
+          if (this.isMajor()) {
             key = this.keynote
           } else {
             key = `${this.keynote}m`
@@ -196,7 +205,7 @@ export default {
       var target = []
       if (this.twelveTones.length) {
         target.push(`"${this.twelveTones[7]}7"`)
-        if (this.tonality === 'major') {
+        if (this.isMajor()) {
           target.unshift(`"${this.twelveTones[2]}m7"`)
           target.push(`"${this.twelveTones[0]}maj"`)
         } else {
@@ -206,17 +215,19 @@ export default {
       }
       return target
     },
-    guideTones: function () {
+    guideTone: function () {
       // ここも依存してる
-      var body = []
+      var guideTones = []
       if (this.chords.length && this.checkedGuides.length) {
-        if (this.checkedGuides.some((guide) => guide === 'ChordTone')) {
-          this.chords.forEach((code) => {
-            body.push(code + this.diatonicCodeTone(code))
+        this.chords.forEach((code) => {
+          var guideTone = code
+          this.checkedGuides.forEach((guide) => {
+            guideTone += this.availableNote(code, guide)
           })
-        }
+          guideTones.push(guideTone)
+        })
       }
-      return `K:${this.key}\n` + body.join('|')
+      return 'T:作曲ガイド\n' + `K:${this.key}\n` + guideTones.join('|') + '|'
     },
     body: {
       get: function () {
@@ -237,13 +248,16 @@ export default {
         this.melody = value.replace(/".*?"/g, '')
       },
     },
+    descriptionAbc() {
+      return txt
+    },
   },
   watch: {
     tune: _.debounce(function () {
       this.editor.fireChanged()
     }, 300),
-    guideTones: _.debounce(function () {
-      abcjs.renderAbc('guide', this.guideTones)
+    guideTone: _.debounce(function () {
+      abcjs.renderAbc('guide', this.guideTone)
     }, 300),
   },
   async created() {
@@ -306,12 +320,8 @@ export default {
     },
     sortByKey: function (tones, keynote) {
       var target = []
-      if (keynote === 'C') {
-        target = tones.concat()
-      } else {
-        const index = tones.indexOf(keynote)
-        target = tones.slice(index).concat(tones.slice(0, index))
-      }
+      const index = tones.indexOf(keynote)
+      target = tones.slice(index).concat(tones.slice(0, index))
       return target
     },
     tuneElements: function (abcjs) {
@@ -337,16 +347,87 @@ export default {
       })
       self.body = body
     },
-    diatonicCodeTone: function (code) {
+    availableNote: function (code, toneName) {
       var octaveUp = false
       const keynote = code.match(/[A-Z]/g).join('')
       const diatonic = this.sortByKey(this.sevenTones, this.keynote)
-
       const scales = this.sortByKey(diatonic, keynote).map(function (tone, i) {
         if (i > 0 && tone === 'C') octaveUp = true
         return octaveUp ? tone.toLowerCase() : tone
       })
-      return `${scales[0]}${scales[2]}${scales[4]}${scales[6]}`
+
+      var availableNote = ''
+      switch (toneName) {
+        case 'chordTone':
+          availableNote = `${scales[0]}${scales[2]}${scales[4]}${scales[6]}`
+          break
+        case '9th':
+          availableNote = `${scales[1]}'`
+          break
+        case '11th':
+          availableNote = `${scales[3]}'`
+          break
+        case '#11th':
+          if (this.functionOfcode(code) !== 'subDominant')
+            availableNote = `^${scales[3]}'`
+          break
+        case '13th':
+          if (this.functionOfcode(code) !== 'subDominant')
+            availableNote = `${scales[5]}'`
+          break
+        case 'artered':
+          if (this.functionOfcode(code) === 'dominant')
+            availableNote = `${scales[0]}_${scales[1]}^${scales[1]}${scales[2]}^${scales[3]}_${scales[5]}${scales[6]}${scales[0]}'`
+          break
+        case 'hmp5':
+          if (this.isMinor() && this.functionOfcode(code) === 'dominant') {
+            const before3rd = `${scales[0]}${scales[1]}`
+            const after3rd = `${scales[3]}${scales[4]}${scales[5]}${scales[6]}${scales[0]}'`
+            if (['F', 'Eb', 'Bb', 'C'].includes(this.keynote)) {
+              availableNote = before3rd + `=${scales[2]}` + after3rd
+            } else if (this.keynote === 'Ab') {
+              availableNote = before3rd + `^^${scales[2]}` + after3rd
+            } else {
+              availableNote = before3rd + `^${scales[2]}` + after3rd
+            }
+          }
+          break
+        case 'semitoneToneDiminished':
+          availableNote = `${scales[0]}_${scales[1]}^${scales[1]}${scales[2]}^${scales[3]}${scales[4]}${scales[5]}${scales[6]}${scales[0]}'`
+          break
+        case 'wholeTone':
+          availableNote = `${scales[0]}${scales[1]}${scales[2]}^${scales[3]}_${scales[5]}${scales[6]}${scales[0]}'`
+          break
+      }
+      return availableNote
+    },
+    isMajor: function () {
+      return this.tonality === 'major'
+    },
+    isMinor: function () {
+      return this.tonality === 'minor'
+    },
+    showGuide: function () {
+      this.show = !this.show
+    },
+    functionOfcode: function (code) {
+      if (this.isMajor()) {
+        if (/.m7/.test(code)) {
+          return 'subDominant'
+        } else if (/^(?!.*maj).*$/.test(code)) {
+          return 'dominant'
+        } else {
+          return 'tonic'
+        }
+      } else {
+        if (/.m7\(b5\)/.test(code)) {
+          return 'subDominant'
+        } else if (/^(?!.*m)(.*7)/.test(code)) {
+          return 'dominant'
+        } else {
+          return 'tonic'
+        }
+      }
     },
     async saveOrUpdate() {
       const self = this

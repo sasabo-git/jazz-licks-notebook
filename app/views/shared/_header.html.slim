@@ -1,11 +1,14 @@
 body
-  header
-    .pull-right
-      - if user_signed_in?
-        .username
-          strong= current_user.username
-          | さん こんにちは
+  .header
+    - if user_signed_in?
+      .score-links
+        .index
+          = link_to scores_path, class: "btn btn-border"
+            | 一覧
+        .new-score
+          = link_to t('作成'), new_score_path, class: "btn btn-border"
+      .user-information
         .profile
-          = link_to t('アカウント情報'), current_user, class: 'navbar-link'
+          = link_to t('アカウント情報'), current_user
         .logout
-          = link_to t('ログアウト'), destroy_user_session_path, method: :delete, class: 'navbar-link'
+          = link_to t('ログアウト'), destroy_user_session_path, method: :delete
