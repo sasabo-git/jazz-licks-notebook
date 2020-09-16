@@ -1,14 +1,21 @@
 body
   .header
-    - if user_signed_in?
-      .score-links
-        .index
-          = link_to scores_path, class: "btn btn-border"
-            | 一覧
-        .new-score
-          = link_to t('作成'), new_score_path, class: "btn btn-border"
-      .user-information
-        .profile
-          = link_to t('アカウント情報'), current_user
-        .logout
-          = link_to t('ログアウト'), destroy_user_session_path, method: :delete
+    .buttons
+      button.button.is-primary Primary
+      button.button.is-link Link
+    .buttons
+      button.button.is-info Info
+      button.button.is-success Success
+      button.button.is-warning Warning
+      button.button.is-danger Danger
+    /- if user_signed_in?
+          /ul.navbar-nav.mr-auto
+          /  li.nav-item
+          /    a.navbar-item= link_to("一覧", scores_path, class: "nav-link" )
+          /  li.nav-item
+          /    a.navbar-item= link_to("作成", new_score_path, class: "nav-link" )
+  /      .user-information
+  /        .profile
+  /          = link_to t('アカウント情報'), current_user
+  /        .logout
+  /          = link_to t('ログアウト'), destroy_user_session_path, method: :delete

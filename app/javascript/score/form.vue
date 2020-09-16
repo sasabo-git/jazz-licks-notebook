@@ -25,36 +25,45 @@
           .music-form__label テンポ (40 ~ 350)
           input.bpm(v-model='bpm', @input='clearErrorMsg').music-form__input-short
           | bpm
-          //- .error-message
-          //-   span(style='color: red; margin-left: 20px;') {{ errorMsg }}
-        //- .bpm-slider
-        //-   vue-slider(v-model='bpm', :min='min', :max='max', :tooltip="errorMsg ? 'none' : 'always'", :marks='[40, 350]', @error='error', @change='clearErrorMsg')
         .notelength
           .music-form__label 基本音符長
           input(v-model='noteLength').music-form__input-short
           | 分音符
         .guide
           .music-form__label 作曲ガイド
-          //- input(type='checkbox', v-model='show')
-          //- button(@click='showGuide') ガイド項目の表示を切替
           .check-boxes(v-show='show')
             label(v-for='guide in guides')
               input.guides(type='checkbox', :value='guide.value', v-model='checkedGuides')
               | {{ guide.text }}
       .main-form
-        .title
-          .music-form__label タイトル
-          input(v-model='title').music-form__input
-        .melody
-          .music-form__label メロディー
-          textarea(v-model='melody').music-form__textarea
-        .memo
-          .music-form__label メモ
-          textarea(v-model='memo').music-form__textarea
+        .forms
+          .title
+            .music-form__label タイトル
+            input(v-model='title').music-form__input
+          .melody
+            .music-form__label メロディー
+            textarea(v-model='melody').music-form__textarea
+          .memo
+            .music-form__label メモ
+            textarea(v-model='memo').music-form__textarea
         .how-to-write-abc
-          .music-form__label abc記譜法の書き方
-            .how-to-write-abc__text
-              | {{ descriptionAbc }}
+          .music-form__label abc記譜法ダイジェスト
+            a(href='http://www.ne.jp/asahi/music/marinkyo/ml/abc-regulo.html.ja', target='_blank' rel- 'noopener') (参考リンク)
+          .how-to-write-abc__text
+            p 音階=> A~G, a~g
+            p 中央のド=> C
+            p Cのオクターブ上=> c
+            p cのオクターブ上=> c'
+            p Cのオクターブ下=> C,
+            p 基本音符長が8分音符のとき、
+            p 4分音符=> C2、付点4分音符=> C3
+            p 16分音符=> C/
+            p Cの#=> ^C
+            p Cの♭=> _C
+            p タイ=> C4-C2
+            p スラー=> (C4D4)
+            p 3連符=> (3AAA
+            p 休符=> z
         .abc-paper
           .hidden-text
             textarea(readonly)#abc-source(v-model='tune')
@@ -63,7 +72,7 @@
           .abc-guide
             #guide
         .submit
-          button(@click="saveOrUpdate" type="button")
+          button(@click="saveOrUpdate" type="button").save
             | 保存
 </template>
 
