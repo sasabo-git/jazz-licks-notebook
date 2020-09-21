@@ -1,21 +1,21 @@
-body
-  .header
-    .buttons
-      button.button.is-primary Primary
-      button.button.is-link Link
-    .buttons
-      button.button.is-info Info
-      button.button.is-success Success
-      button.button.is-warning Warning
-      button.button.is-danger Danger
-    /- if user_signed_in?
-          /ul.navbar-nav.mr-auto
-          /  li.nav-item
-          /    a.navbar-item= link_to("一覧", scores_path, class: "nav-link" )
-          /  li.nav-item
-          /    a.navbar-item= link_to("作成", new_score_path, class: "nav-link" )
-  /      .user-information
-  /        .profile
-  /          = link_to t('アカウント情報'), current_user
-  /        .logout
-  /          = link_to t('ログアウト'), destroy_user_session_path, method: :delete
+nav.navbar.is-black(role='navigation', aria-label='main navigation')
+  .container
+    .navbar-brand
+      - if user_signed_in?
+        a.navbar-item.has-text-weight-bold(href="/scores")
+          | Jazz Lick Notebook
+      - else
+        a.navbar-item.has-text-weight-bold(href="/")
+          | Jazz Lick Notebook
+    .navbar-menu.is-active
+      - if user_signed_in?
+        .navbar-end
+          .navbar-item.has-text-black.has-text-weight-bold
+            = link_to 'アカウント情報', user_path(current_user)
+          .navbar-item.has-text-black.has-text-weight-bold
+            = link_to 'ログアウト', destroy_user_session_path, method: :delete
+      - else
+        - if request.path == root_path
+          .navbar-end
+            .navbar-item.has-text-black.has-text-weight-bold
+              = button_to 'ログイン', new_user_session_path, method: :get, class: "button is-small has-text-weight-bold"

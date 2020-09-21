@@ -7,7 +7,7 @@ html
     = csp_meta_tag
     = stylesheet_pack_tag 'application', media: 'all'
     = javascript_pack_tag 'application'
-  body
+  body.has-background-primary
     #wrapper
       = render 'shared/header'
     = yield

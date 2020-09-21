@@ -1,21 +1,19 @@
 <template lang="pug">
-  table.scores
-    thead
-      tr
-        th タイトル
-        th コード進行
-        th 譜面
-        th
-    tbody
-      tr.score(v-for="(paper, index) in papers" )
-        td.title
-          | {{ titles[index] }}
-        td.chord-progression
-          | {{ chordProgressions[index] }}
-        td.paper(v-bind:id="paper")
-        td
-          a.link(:href="'/scores/' + ids[index]")
-            | 詳細
+  .scores.box.mt-4
+    table.table.is-narrow.is-hoverable.is-fullwidth
+      thead
+        tr
+          th タイトル
+          th 譜面
+          th コード進行
+      tbody
+        tr.score(v-for="(paper, index) in papers")
+          td.is-vcentered
+            a.link(:href="'/scores/' + ids[index]")
+              | {{ titles[index] }}
+          td.paper(v-bind:id="paper")
+          td.is-vcentered
+            | {{ chordProgressions[index] }}
 </template>
 
 <script>
@@ -39,7 +37,12 @@ export default {
   },
   updated() {
     this.$nextTick(() => {
-      abcjs.renderAbc(this.papers, this.abcString)
+      abcjs.renderAbc(this.papers, this.abcString, {
+        staffwidth: 650,
+        paddingtop: 5,
+        paddingbottom: 5,
+        paddingright: 5,
+      })
     })
   },
   methods: {

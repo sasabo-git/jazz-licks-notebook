@@ -1,0 +1,26 @@
+$light-grayish-blue: #eff0f3;
+$sapphire: #2d334a;
+$school-bus-yellow: #ffd803;
+$blue: #3da9fc;
+$light-green: #00E658;
+
+$primary: $light-grayish-blue;
+$warning: $school-bus-yellow;
+$black: $sapphire;
+$text: $sapphire;
+$text-strong: $sapphire;
+$link: $blue;
+$link-hover: $light-green;
+
+$body-background-color: $light-grayish-blue;
+$table-cell-border: 1px solid $sapphire;
+
+@import "~bulma/sass/utilities/_all.sass";
+@import "~bulma/sass/base/_all.sass";
+@import "~bulma/sass/elements/button.sass";
+@import "~bulma/sass/elements/container.sass";
+@import "~bulma/sass/elements/title.sass";
+@import "~bulma/sass/form/_all.sass";
+@import "~bulma/sass/components/navbar.sass";
+@import "~bulma/sass/layout/hero.sass";
+@import "~bulma/sass/layout/section.sass";

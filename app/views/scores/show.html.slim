@@ -1,18 +1,25 @@
-p#notice
-  = notice
-h1
-  | Score
-.score
-  #js-show-score(data-score-id="#{@score.id}", data-first-measure="#{false}")
-.memo
-  - if @score.memo.present?
-    .label
-      | メモ
-    .memo-text
-      = @score.memo
-.page-actions
-  = link_to 'Edit', edit_score_path(@score)
-  |  | 
-  = link_to 'Delete', @score, method: :delete, data: { confirm: 'Are you sure?'}
-  |  | 
-  = link_to 'Back', scores_path
+.container
+  p#notice
+    = notice
+  nav.level.mt-4
+    .level-left
+      .level-item
+        h1.title
+          = @score.title
+    .level-right
+      p.level-item
+        = button_to '一覧', scores_path , method: :get, class: "button is-warning has-text-weight-bold has-text-black"
+  .score
+    #js-show-score(data-score-id="#{@score.id}", data-first-measure="#{false}")
+  .memo
+    - if @score.memo.present?
+      .box.mt-4
+        .subtitle
+          | メモ
+        .text
+          = @score.memo
+  .columns.is-centered.mt-4
+    .column.is-3
+      = button_to '修正', edit_score_path(@score), method: :get, class: "button is-warning has-text-weight-bold is-fullwidth has-text-black"
+    .column.is-3
+      = button_to '削除', @score, method: :delete, data: { confirm: 'Are you sure?'}, class: "button is-danger has-text-weight-bold is-fullwidth"

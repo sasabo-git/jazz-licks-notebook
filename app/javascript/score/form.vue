@@ -1,79 +1,129 @@
 <template lang="pug">
-  .score-form
-    .music-form
-      .side-form
-        .key
-          .music-form__label キー
-          .keynote
-            select(v-model='keynote')
-              option(v-for='keynote in allTones')
-                | {{ keynote }}
-          .tonality
-            select(v-model='tonality')
-              option(v-for='tonality in tonalities', v-bind:value='tonality.value')
-                | {{ tonality.text }}
-        .chord-progression
-          .music-form__label コード進行
-          select(v-model='chordProgression')
-            option(v-for='progression in chordProgressions', v-bind:value='progression.value')
-              | {{ progression.text }}
-        .meter
-          .music-form__label 拍子記号
-          input(v-model='meter').music-form__input-short
-          | 拍子
-        .bpm
-          .music-form__label テンポ (40 ~ 350)
-          input.bpm(v-model='bpm', @input='clearErrorMsg').music-form__input-short
-          | bpm
-        .notelength
-          .music-form__label 基本音符長
-          input(v-model='noteLength').music-form__input-short
-          | 分音符
-        .guide
-          .music-form__label 作曲ガイド
-          .check-boxes(v-show='show')
-            label(v-for='guide in guides')
-              input.guides(type='checkbox', :value='guide.value', v-model='checkedGuides')
-              | {{ guide.text }}
-      .main-form
-        .forms
-          .title
-            .music-form__label タイトル
-            input(v-model='title').music-form__input
-          .melody
-            .music-form__label メロディー
-            textarea(v-model='melody').music-form__textarea
-          .memo
-            .music-form__label メモ
-            textarea(v-model='memo').music-form__textarea
-        .how-to-write-abc
-          .music-form__label abc記譜法ダイジェスト
-            a(href='http://www.ne.jp/asahi/music/marinkyo/ml/abc-regulo.html.ja', target='_blank' rel- 'noopener') (参考リンク)
-          .how-to-write-abc__text
-            p 音階=> A~G, a~g
-            p 中央のド=> C
-            p Cのオクターブ上=> c
-            p cのオクターブ上=> c'
-            p Cのオクターブ下=> C,
-            p 基本音符長が8分音符のとき、
-            p 4分音符=> C2、付点4分音符=> C3
-            p 16分音符=> C/
-            p Cの#=> ^C
-            p Cの♭=> _C
-            p タイ=> C4-C2
-            p スラー=> (C4D4)
-            p 3連符=> (3AAA
-            p 休符=> z
-        .abc-paper
-          .hidden-text
-            textarea(readonly)#abc-source(v-model='tune')
-          #paper
-          #midi
-          .abc-guide
-            #guide
-        .submit
-          button(@click="saveOrUpdate" type="button").save
-            | 保存
+  .tile.is-ancestor.has-background-primary
+    .tile
+      .setting.tile.is-parent.is-3
+        article.tile.is-child.box
+          p.title.is-size-5
+            | 曲の設定
+          .content
+            p.key
+              h6.subtitle.is-6.mb-1
+                | キー
+              .columns.is-variable.is-1
+                .column
+                  .keynote.select.is-small.is-fullwidth
+                    select(v-model='keynote')
+                      option(v-for='keynote in allTones')
+                        | {{ keynote }}
+                .column
+                  .tonality.select.is-small.is-fullwidth
+                      select(v-model='tonality')
+                        option(v-for='tonality in tonalities', v-bind:value='tonality.value')
+                          | {{ tonality.text }}
+            p.chord-progression
+              h6.subtitle.is-6.mb-1
+                | コード進行
+              .select.is-small.is-fullwidth
+                select(v-model='chordProgression')
+                  option(v-for='progression in chordProgressions', v-bind:value='progression.value')
+                    | {{ progression.text }}
+            p.meter
+              h6.subtitle.is-6.mb-1
+                | 拍子記号
+              .columns.is-variable.is-1
+                .column.is-4
+                  input(v-model='meter').input.is-small
+                .column
+                  | 拍子
+            p.bpm
+              h6.subtitle.is-6.mb-1
+                | テンポ (40 ~ 350)
+              .columns.is-variable.is-1
+                .column.is-4
+                  input(v-model='bpm', @input='clearErrorMsg').input.is-small
+                .column
+                  | bpm
+            p.notelength
+              h6.subtitle.is-6.mb-1
+                | 基本音符長
+              .columns.is-variable.is-1
+                .column.is-4
+                  input(v-model='noteLength').input.is-small
+                .column
+                  | 分音符
+            p.title.is-size-5
+              | 作曲ガイド
+            .content
+              .check-boxes(v-show='show')
+                label(v-for='guide in guides')
+                  .check-box.is-fullwidth
+                    input.guides(type='checkbox', :value='guide.value', v-model='checkedGuides')
+                    | {{ guide.text }}
+      .tile.is-9.is-vertical
+        .tile
+          .music-form.tile.is-parent.is-7
+            article.tile.is-child.box
+              p.title.is-size-5
+                | フレーズを作ろう
+              .content
+                p.title-form
+                  h6.subtitle.is-6
+                    | タイトル
+                  input(v-model='title', class="input", placeholder="タイトルを記入して下さい")
+                p.melody-form
+                  h6.subtitle.is-6
+                    | メロディー
+                  textarea(v-model='melody', class="textarea", rows="4",  placeholder="作曲ガイドを参考にABC記譜法で記入して下さい")
+                p.memo-form
+                  h6.subtitle.is-6
+                    | メモ
+                  textarea(v-model='memo', class="textarea", rows="4", placeholder="曲に関するメモを記入できます(任意)")
+          .hint.tile.is-parent
+            article.tile.is-child.box
+              .columns
+                .column
+                  p.title.is-size-5
+                    | ヒント
+                p.column
+                  a(href='http://www.ne.jp/asahi/music/marinkyo/ml/abc-regulo.html.ja') 参考ページ
+              .content.is-mideam
+                h6.subtitle.is-6.is-marginless
+                  | 音の高さと休符
+                ul
+                  li 音階: A~G, a~g
+                  li 中央のド: C
+                  li Cのオクターブ上: c
+                  li cのオクターブ上: c'
+                  li Cのオクターブ下: C,
+                  li 休符: z
+                h6.subtitle.is-6.is-marginless
+                  | 調号 演奏記号
+                ul
+                  li C# (シャープ): ^C
+                  li Cb (フラット): _C
+                  li タイ: -C2
+                  li スラー: (C4D4)
+                  li 3連符: (3AAA
+                h6.subtitle.is-6.is-marginless
+                  | 小節線
+                ul
+                  li 小節線: |
+                  li 終止線: |]
+        .score.tile.is-parent
+          article.tile.is-child.box.is-12
+            p.title.is-size-5
+              | 譜面
+            .content
+              .abc-paper
+                textarea(readonly)#abc-source(v-model='tune').is-hidden
+                #paper
+                #midi
+                .abc-guide
+                  #guide
+            nav.level-center
+                .level-item
+                  button(v-if="userSignedIn" @click="saveOrUpdate" type="button").button.is-warning.has-text-black.has-text-weight-bold
+                    | 保存する
 </template>
 
 <script>
@@ -98,6 +148,7 @@ export default {
   },
   props: {
     scoreId: { type: String, required: true },
+    userSignedIn: { type: Boolean, required: true },
   },
   data() {
     return {
@@ -235,7 +286,7 @@ export default {
           guideTones.push(guideTone)
         })
       }
-      return 'T:作曲ガイド\n' + `K:${this.key}\n` + guideTones.join('|') + '|'
+      return 'T:作曲ガイド\n' + guideTones.join('|') + '|'
     },
     body: {
       get: function () {
@@ -262,7 +313,11 @@ export default {
       this.editor.fireChanged()
     }, 300),
     guideTone: _.debounce(function () {
-      abcjs.renderAbc('guide', this.guideTone)
+      abcjs.renderAbc('guide', this.guideTone, {
+        staffwidth: 650,
+        paddingright: 15,
+        responsive: 'resize',
+      })
     }, 300),
   },
   async created() {
@@ -274,6 +329,11 @@ export default {
       canvas_id: 'paper',
       generate_midi: true,
       midi_id: 'midi',
+      abcjsParams: {
+        staffwidth: 650,
+        paddingright: 15,
+        responsive: 'resize',
+      },
     })
     /* eslint-enable */
   },
@@ -311,6 +371,9 @@ export default {
                   break
                 case 'chord_progression':
                   self.chordProgression = score[key]
+                  break
+                case 'memo':
+                  self.memo = score[key]
                   break
                 case 'body':
                   body = `${score[key]}`

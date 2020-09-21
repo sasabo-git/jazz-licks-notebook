@@ -1,13 +1,21 @@
 <template lang="pug">
-  .score-and-player
-    .score
-      #paper
-    .midi
-      #midi-id
+  .container
     .key-controle
-      button(v-on:click='transpose += 1') キーを上げる
-      button(v-on:click='transpose = 0') 原曲キー
-      button(v-on:click='transpose -= 1') キーを下げる
+      .columns
+        .column
+          .buttons
+            button.button(v-on:click='transpose -= 1') キーを下げる
+            button.button(v-on:click='transpose = 0') 原曲キー
+            button.button(v-on:click='transpose += 1') キーを上げる
+    .box.mt-4
+      .score
+        .columns.is-centered
+          .column.is-10
+            #paper
+      .midi
+        .columns.is-centered
+          .column.is-10
+            #midi-id
 </template>
 
 <script>
@@ -59,6 +67,8 @@ export default {
     renderScore: function (score, transpose) {
       abcjs.renderAbc('paper', score, {
         visualTranspose: transpose,
+        responsive: 'resize',
+        paddingbottom: 0,
       })
       abcjs.renderMidi('midi-id', score, {
         midiTranspose: transpose,

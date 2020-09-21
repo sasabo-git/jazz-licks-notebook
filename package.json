@@ -11,6 +11,7 @@
     "font-awesome": "^4.7.0",
     "import-glob-loader": "^1.1.0",
     "lodash": "^4.17.20",
+    "node-sass": "^4.14.1",
     "pug": "^3.0.0",
     "pug-plain-loader": "^1.0.0",
     "turbolinks": "^5.2.0",

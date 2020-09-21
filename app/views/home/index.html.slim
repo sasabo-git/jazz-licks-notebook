@@ -1,5 +1,12 @@
-h1 home
-.new-account
-  = link_to 'アカウントを作成', new_user_registration_path
-.login
-  = link_to 'ログイン', new_user_session_path
+section.hero
+  .hero-body
+    .container.has-text-centered
+      p.title
+        | Jazz Lick Notebook
+      p.subtitle
+        | 簡単にフレーズをメモして管理できるサービス
+      .columns.is-centered
+        .column.is-6
+          = button_to 'アカウント登録してフレーズを管理する', new_user_registration_path, method: :get, class: "button is-warning has-text-weight-bold is-fullwidth has-text-black"
+.container
+  #js-form-score(data-score-id="new", user-signed-in="#{user_signed_in?}")

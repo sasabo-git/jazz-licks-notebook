@@ -1,13 +1,15 @@
-.profile
-  h1 プロフィール
-  .username
-    | ユーザー名: 
-    = @user.username
-  .mail
-    | メール: 
-    = @user.email
-.link
-  .edit-profile
-  = link_to "プロフィールの編集", :edit_user_registration
-  .back
-  = link_to "スコア一覧", :scores
+.container
+  .columns
+    .column.is-6.is-offset-3.mt-4
+      .box
+        .title
+          | アカウント情報
+        .block
+          .username
+            | ユーザー名: 
+            = @user.username
+          .mail
+            | メール: 
+            = @user.email
+        .block
+          = button_to '編集', :edit_user_registration, method: :get, class: "button is-warning has-text-weight-bold is-fullwidth has-text-black"

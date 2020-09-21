@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-json.call(@score, :title, :body, :key, :meter, :chord_progression)
+json.call(@score, :title, :body, :key, :meter, :chord_progression, :bpm, :memo)

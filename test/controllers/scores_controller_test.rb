@@ -1,4 +1,6 @@
-require 'test_helper'
+# frozen_string_literal: true
+
+require "test_helper"
 
 class ScoresControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -16,7 +18,7 @@ class ScoresControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create score" do
-    assert_difference('Score.count') do
+    assert_difference("Score.count") do
       post scores_url, params: { score: { content: @score.content, title: @score.title } }
     end
 
@@ -39,7 +41,7 @@ class ScoresControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy score" do
-    assert_difference('Score.count', -1) do
+    assert_difference("Score.count", -1) do
       delete score_url(@score)
     end
 
