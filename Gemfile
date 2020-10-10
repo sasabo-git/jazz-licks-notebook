@@ -8,7 +8,7 @@ ruby "2.7.0"
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem "rails", "~> 6.0.3", ">= 6.0.3.1"
 # Use sqlite3 as the database for Active Record
-gem "sqlite3", "~> 1.4"
+# gem "sqlite3", "~> 1.4"
 # Use Puma as the app server
 gem "puma", "~> 4.1"
 # Use SCSS for stylesheets
@@ -32,9 +32,9 @@ gem "bootsnap", ">= 1.4.2", require: false
 
 group :development, :test do
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
-
   # not default
   gem "pry-byebug"
+  gem "sqlite3", "~> 1.4"
 end
 
 group :development do
@@ -54,6 +54,11 @@ group :test do
   gem "capybara", ">= 2.15"
   gem "selenium-webdriver"
   gem "webdrivers"
+end
+
+# not default
+group :production do
+  gem "pg", "0.20.0"
 end
 
 gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
