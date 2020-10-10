@@ -5,7 +5,7 @@ class ScoresController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @scores = Score.all
+    @scores = current_user.scores.all
   end
 
   def show
