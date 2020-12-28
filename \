@@ -20,8 +20,9 @@
                       input.guides(type='checkbox', :value='guide.value', v-model='checkedGuides')
                       | {{ guide.text }}
               p.title.is-size-5
-                explain-abc(ref='dialog')
-                button.button.is-primary(@click='test1') ABC記法の書き方
+                | ヒント
+                explainAbc(ref='dialog') ヒントボタン
+                button.button.is-primary(@click='test1')
         .tile.is-9.is-vertical
           .tile
             .music-form.tile.is-parent.is-12
@@ -68,7 +69,7 @@ import _ from 'lodash'
 import explainAbc from './explain_abc.vue'
 
 export default {
-  components: { 'explain-abc': explainAbc },
+  components: { explainAbc },
 
   props: {
     scoreId: { type: String, required: true },
@@ -405,10 +406,10 @@ export default {
         noteLength: this.noteLength,
       })
     },
+  },
 
-    test1() {
-      this.$refs.dialog.showDialog()
-    },
+  test1() {
+    this.$refs.dialog.showDialog()
   },
 }
 </script>
