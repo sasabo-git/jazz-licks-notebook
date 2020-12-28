@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import BasicInformationForm from './basic-information-form.vue'
+import FormBasicInformation from './form-basic-information.vue'
 import FormBody from './form_body.vue'
 
 // ここでVueでVueRouterを使うことを明示
@@ -9,7 +9,7 @@ import FormBody from './form_body.vue'
 Vue.use(VueRouter)
 
 const routes = [
-  { path: '/', props: true, component: BasicInformationForm },
+  { path: '/', props: true, component: FormBasicInformation },
   { path: '/body', name: 'ScoreBody', props: true, component: FormBody },
 ]
 
