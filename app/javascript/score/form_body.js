@@ -1,6 +1,5 @@
 import Vue from 'vue'
-import Form from './form.vue'
-import Router from './router.js'
+import ShowScore from './form.vue'
 
 document.addEventListener('DOMContentLoaded', () => {
   const score = document.getElementById('js-form-score')
@@ -9,10 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     var userSignedIn = score.getAttribute('user-signed-in')
     userSignedIn = userSignedIn === 'true'
     new Vue({
-      // routerのrは小文字でないとエラーが発生する
-      router: Router,
       render: (h) =>
-        h(Form, {
+        h(ShowScore, {
           props: {
             scoreId: scoreId,
             userSignedIn: userSignedIn,
