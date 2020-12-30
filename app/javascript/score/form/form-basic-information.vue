@@ -49,6 +49,8 @@
 </template>
 
 <script>
+import config from './form_const'
+
 export default {
   props: {
     store: { type: Object, required: true },
@@ -70,25 +72,17 @@ export default {
         { text: 'メジャー', value: 'major' },
         { text: 'マイナー', value: 'minor' },
       ],
-      allTones: [
-        'C',
-        'Db',
-        'D',
-        'Eb',
-        'E',
-        'F',
-        'Gb',
-        'G',
-        'Ab',
-        'A',
-        'Bb',
-        'B',
-      ],
       chordProgressions: [
         { text: '自由', value: 'free' },
         { text: '2-5-1', value: '2-5-1' },
       ],
     }
+  },
+
+  computed: {
+    allTones() {
+      return config.ALLTONES
+    },
   },
 
   watch: {

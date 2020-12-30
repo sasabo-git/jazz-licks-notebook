@@ -1,5 +1,5 @@
 <template lang="pug">
-  .container.is-max-desktop
+  .container
     router-view(:scoreId='scoreId' :userSignedIn='userSignedIn', :store='store')
 </template>
 
