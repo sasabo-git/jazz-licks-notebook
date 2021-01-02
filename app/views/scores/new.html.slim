@@ -1,10 +1,11 @@
-.container
-  nav.level.mt-4
-    .level-left
-      .level-item
-        h1.title
-          | 新規作成
-    .level-right
-      p.level-item
-        = button_to '一覧', scores_path , method: :get, class: "button is-warning has-text-weight-bold has-text-black"
-  #js-form-score(data-score-id="new", user-signed-in="#{user_signed_in?}")
+section.section
+  .container
+    nav.level.mt-4
+      .level-left
+        .level-item
+          h1.title
+            | 新規作成
+      .level-right
+        p.level-item
+          = button_to '一覧', scores_path , method: :get, class: "button is-warning has-text-weight-bold has-text-black"
+    #js-form-score(data-score-id="new", user-signed-in="#{user_signed_in?}")

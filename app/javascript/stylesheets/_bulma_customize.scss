@@ -2,18 +2,28 @@ $light-grayish-blue: #eff0f3;
 $sapphire: #2d334a;
 $school-bus-yellow: #ffd803;
 $blue: #3da9fc;
-$light-green: #00E658;
+$light-green: #00e658;
+$green: #66cc00;
+$gray: #a0a0a0;
+$khaki: #708090;
 
 $primary: $light-grayish-blue;
 $warning: $school-bus-yellow;
 $black: $sapphire;
+
 $text: $sapphire;
 $text-strong: $sapphire;
+
 $link: $blue;
 $link-hover: $light-green;
 
 $body-background-color: $light-grayish-blue;
 $table-cell-border: 1px solid $sapphire;
+
+$tabs-link-color: $khaki;
+$tabs-link-active-color: $sapphire;
+$tabs-link-active-border-bottom-color: $sapphire;
+$section-padding: 1.0rem 1.5rem;
 
 @import "~bulma/sass/utilities/_all.sass";
 @import "~bulma/sass/base/_all.sass";

@@ -1,15 +1,22 @@
 <template lang="pug">
-  .guide
-    p.title.is-size-5
+  article.guide.message.is-light
+    .message-header
       | 作曲ガイド
-    .content
-      .check-boxes(v-show='show')
-        label(v-for='guide in guides')
-          .check-box.is-fullwidth
-            input.guides(type='checkbox', :value='guide.value', v-model='checkedGuides')
-            | {{ guide.text }}
-    p.abc-guide
-      #guide
+      button.button.is-warning.is-light.is-small(v-on:click='showGuide')
+        | {{ showOrHide }}
+    .message-body(v-show='show')
+      .columns
+        .column.is-4
+          .check-boxes
+            .columns.is-multiline
+              label(v-for='guide in guides')
+                .column
+                  .check-box.is-fullwidth
+                    input.guides(type='checkbox', :value='guide.value', v-model='checkedGuides')
+                    | {{ guide.text }}
+        .column
+          p.abc-guide
+            #guide
 </template>
 
 <script>
@@ -46,6 +53,7 @@ export default {
 
       checkedGuides: [],
       show: true,
+      showOrHide: '非表示',
       guide: {},
     }
   },
@@ -62,7 +70,7 @@ export default {
           guideTones.push(guideTone)
         })
       }
-      return 'T:作曲ガイド\n' + `K:${this.key}\n` + guideTones.join('|') + '|'
+      return `K:${this.key}\n` + guideTones.join('|') + '|'
     },
   },
 
@@ -133,6 +141,7 @@ export default {
 
     showGuide: function () {
       this.show = !this.show
+      this.showOrHide = this.show ? '非表示' : '表示'
     },
 
     functionOfcode: function (code) {

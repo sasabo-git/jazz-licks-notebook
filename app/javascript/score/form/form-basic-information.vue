@@ -1,51 +1,72 @@
 <template lang="pug">
   .container
-    .tabs.is-boxed
-      ul
-        li
-          router-link(to='/') 基本情報
-        li
-          router-link(:to="{name:'ScoreBody'}", v-on:click.native='setBasicScoreInformations') 作曲
-    p.title.is-size-5
-      | 曲の基本設定
-    .content
-      p.title-form
-        h6.subtitle.mb-1
-          | タイトル
-        input(v-model='title', class="input", placeholder="タイトルを記入して下さい")
-      p.memo-form
-        h6.subtitle.mb-1
-          | メモ
-        textarea(v-model='memo', class="textarea", rows="4", placeholder="曲に関するメモを記入できます(任意)")
-      p.key
-        h6.subtitle.mb-1
-          | キー
-        .columns.is-variable.is-1
-          .column
-            .keynote.select.is-small
-              select(v-model='keynote')
-                option(v-for='keynote in allTones')
-                  | {{ keynote }}
-          .column
-            .tonality.select.is-small
+    .form.box
+      .tabs.is-box
+        ul
+          li.is-active
+            a 基本情報ページ
+          li
+            router-link(:to="{name:'ScoreBody'}", v-on:click.native='setBasicScoreInformations') 作曲ページ
+      .title-form.field.is-horizontal
+        .field-label.is-normal
+          label.label
+            | タイトル
+        .field-body
+          .field
+            p.control
+              input(v-model='title', class="input", placeholder="タイトルを記入して下さい")
+      .key.field.is-horizontal
+        .field-label.is-normal
+          label.label
+            | キー
+        .field-body
+          .keynote.field
+            .control
+              .select
+                select(v-model='keynote')
+                  option(v-for='keynote in allTones')
+                    | {{ keynote }}
+              .select
                 select(v-model='tonality')
                   option(v-for='tonality in tonalities', v-bind:value='tonality.value')
                     | {{ tonality.text }}
-      p.chord-progression
-        h6.subtitle.is-6.mb-1
-          | コード進行
-        .select.is-small
-          select(v-model='chordProgression')
-            option(v-for='progression in chordProgressions', v-bind:value='progression.value')
-              | {{ progression.text }}
-      p.meter
-        h6.subtitle.is-6.mb-1
-          | 拍子記号
-        .columns.is-variable.is-1
-          .column.is-4
-            input(v-model='meter').input.is-small
-          .column
+      .meter.field.is-horizontal
+        .field-label.is-normal
+          label.label
             | 拍子
+        .field-body
+          .field.is-narrow
+            p.control
+              input(v-model='meter').input
+      .note-length.field.is-horizontal
+        .field-label.is-normal
+          label.label
+            | 基本音符長
+        .field-body
+          .field.is-narrow
+            p.control
+              input(v-model='noteLength').input
+          .hoge.mt-2
+            | 分音符
+      .chord-progression.field.is-horizontal
+        .field-label.is-normal
+          label.label
+            | コード進行
+        .field-body
+          .field
+            p.control
+              .select
+                select(v-model='chordProgression')
+                  option(v-for='progression in chordProgressions', v-bind:value='progression.value')
+                    | {{ progression.text }}
+      .memo.field.is-horizontal
+        .field-label.is-normal
+          label.label
+            | メモ
+        .field-body
+          .field
+            p.control.is-expanded
+              textarea(v-model='memo', class="textarea", rows="4", placeholder="曲に関するメモを記入できます(任意)")
 </template>
 
 <script>
@@ -73,7 +94,7 @@ export default {
         { text: 'マイナー', value: 'minor' },
       ],
       chordProgressions: [
-        { text: '自由', value: 'free' },
+        { text: '', value: 'free' },
         { text: '2-5-1', value: '2-5-1' },
       ],
     }
@@ -94,7 +115,7 @@ export default {
         this.tonality = val.states.tonality
         this.meter = val.states.meter
         this.chordProgression = val.states.chordProgression
-        this.bpm = val.states.bpm
+        this.noteLength = val.states.noteLength
         this.memo = val.states.memo
       },
       // deepをtrueにしないとオブジェクトの値を検知できなくなるので削除不可
@@ -110,7 +131,7 @@ export default {
         tonality: this.tonality,
         chordProgression: this.chordProgression,
         meter: this.meter,
-        bpm: this.bpm,
+        noteLength: this.noteLength,
         memo: this.memo,
       })
     },

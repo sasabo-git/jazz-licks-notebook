@@ -17,7 +17,7 @@ export default {
       tonality: 'major',
       melody: '',
       meter: '4/4',
-      chordProgression: '',
+      chordProgression: 'free',
       bpm: 120,
       noteLength: '8',
       memo: '',
@@ -33,7 +33,7 @@ export default {
           tonality: 'major',
           melody: '',
           meter: '4/4',
-          chordProgression: '',
+          chordProgression: 'free',
           bpm: 120,
           noteLength: '8',
           memo: '',
@@ -44,12 +44,12 @@ export default {
           this.states.tonality = states.tonality
           this.states.chordProgression = states.chordProgression
           this.states.meter = states.meter
-          this.states.bpm = states.bpm
+          this.states.noteLength = states.noteLength
           this.states.memo = states.memo
         },
         setScoreBody(states) {
           this.states.melody = states.melody
-          this.states.noteLength = states.noteLength
+          this.states.bpm = states.bpm
         },
       },
     }
@@ -162,12 +162,12 @@ export default {
         tonality: this.tonality,
         chordProgression: this.chordProgression,
         meter: this.meter,
-        bpm: this.bpm,
+        noteLength: this.noteLength,
         memo: this.memo,
       })
       this.store.setScoreBody({
         melody: this.melody,
-        noteLength: this.noteLength,
+        bpm: this.bpm,
       })
     },
   },

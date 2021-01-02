@@ -1,48 +1,38 @@
 <template lang="pug">
   .container
-    .tabs.is-boxed
-      ul
-        li
-          router-link(to='/', v-on:click.native='setScoreBody()') 基本情報
-        li
-          router-link(:to="{name:'ScoreBody'}") 作曲
-    .tile.is-ancestor.has-background-primary
-      .music-form.tile.is-parent
-        article.tile.is-child.box
-          p.note-length
-            h6.subtitle.is-6.mb-1
-              | 基本音符長
-            .columns.is-variable.is-1
-              .column.is-4
-                input(v-model='noteLength').input.is-small
-              .column
-                | 分音符
-          p.bpm
-            h6.subtitle.is-6.mb-1
-              | テンポ (40 ~ 350)
-            .columns.is-variable.is-1
-              .column.is-4
-                input(v-model='bpm').input.is-small
-              .column
-                | bpm
-          p.explain-abc
-            explain-abc(ref='dialog')
-            button.button.is-primary(@click='showDialog') ABC記法の書き方
-          p.melody-form
-            h6.subtitle.is-6.mb-1
+    .form.box
+      .tabs.is-box
+        ul
+          li
+            router-link(to='/', v-on:click.native='setScoreBody()') 基本情報ページ
+          li.is-active
+            a 作曲ページ
+      .music-form.columns
+        .column.is-4
+          .melody-form.field
+            label.label
               | メロディー
-            textarea(v-model='melody', class="textarea", rows="4")
+            p.control
+              textarea(v-model='melody', class="textarea", rows="4")
+          .bpm.field.field
+            label.label
+              | テンポ
+            .columns.is-variable.is-1
+              p.control
+                .column
+                  input(v-model='bpm').input.is-small
+                .column.mt-1
+                  | bpm
+        .column
           p.abc-paper
             textarea(readonly)#abc-source(v-model='tune').is-hidden
-            #paper
             #midi
-    .guide.tile.is-child
-      article.tile.is-child.box
-        guide(:chordProgression='chordProgression', :keynote='store.states.keynote', :tonality='tonality')
-    nav.level-center
-        .level-item
-          button(v-if="userSignedIn" @click="saveOrUpdate" type="button").button.is-warning.has-text-black.has-text-weight-bold
-                | 保存する
+            #paper
+    guide(:chordProgression='chordProgression', :keynote='store.states.keynote', :tonality='tonality', v-show="chordProgression !== 'free'")
+    nav.save-button.level-center
+      .level-item
+        button(v-if="userSignedIn" @click="saveOrUpdate" type="button").button.is-warning.has-text-black.has-text-weight-bold
+          | 保存する
 </template>
 
 <script>
@@ -88,7 +78,7 @@ export default {
     tune: {
       get: function () {
         var target =
-          `T:${this.title}\n` +
+          // `T:${this.title}\n` +
           `K:${this.key}\n` +
           `M:${this.meter}\n` +
           `L:1/${this.noteLength}\n` +
@@ -207,7 +197,7 @@ export default {
     setScoreBody() {
       this.store.setScoreBody({
         melody: this.melody,
-        noteLength: this.noteLength,
+        bpm: this.bpm,
       })
     },
 
