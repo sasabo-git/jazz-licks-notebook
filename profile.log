@@ -1,0 +1,489 @@
+FUNCTION  <SNR>26_notify()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/autoload/coc/client.vim line 181
+Called 41 times
+Total time:   0.004136
+ Self time:   0.003787
+
+count  total (s)   self (s)
+   41   0.000928   0.000579   let channel = coc#client#get_channel(self)
+   41              0.000114   if empty(channel)
+                                return ''
+   41              0.000039   endif
+   41              0.000051   try
+   41              0.000070     if s:is_vim
+                                  call ch_sendraw(channel, json_encode([0, [a:method, a:args]])."\n")
+   41              0.000039     else
+   41              0.001176       call call('rpcnotify', [channel, a:method] + a:args)
+   41              0.000049     endif
+                              catch /.*/
+                                if v:exception =~# 'E475'
+                                  if get(g:, 'coc_vim_leaving', 0)
+                                    return
+                                  endif
+                                  echohl Error | echom '['.self.name.'] server connection lost' | echohl None
+                                  let name = self.name
+                                  call s:on_exit(name, 0)
+                                  execute 'silent do User ConnectionLost'.toupper(name[0]).name[1:]
+                                elseif v:exception =~# 'E12'
+                                  " neovim's bug, ignore it
+                                else
+                                  echohl Error | echo 'Error on notify ('.a:method.'): '.v:exception | echohl None
+                                endif
+   41              0.000046   endtry
+
+FUNCTION  coc#client#get_channel()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/autoload/coc/client.vim line 141
+Called 41 times
+Total time:   0.000349
+ Self time:   0.000349
+
+count  total (s)   self (s)
+   41              0.000072   if s:is_vim
+                                return a:client['channel']
+   41              0.000031   endif
+   41              0.000103   return a:client['chan_id']
+
+FUNCTION  coc#float#check_related()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/autoload/coc/float.vim line 796
+Called 1 time
+Total time:   0.000131
+ Self time:   0.000131
+
+count  total (s)   self (s)
+    1              0.000009   let invalids = []
+    1              0.000005   if s:is_vim
+                                if !exists('*popup_list')
+                                  return
+                                endif
+                                for id in popup_list()
+                                  let target = getwinvar(id, 'target_winid', 0)
+                                  if (target && !s:popup_visible(target)) || getwinvar(id, 'kind', '') == 'pum'
+                                    call add(invalids, id)
+                                  endif
+                                endfor
+    1              0.000001   else
+    2              0.000013     for i in range(1, winnr('$'))
+    1              0.000007       let target = getwinvar(i, 'target_winid', 0)
+    1              0.000005       if target && !nvim_win_is_valid(target)
+                                    call add(invalids, win_getid(i))
+    1              0.000007       elseif getwinvar(i, 'kind', '') == 'pum'
+                                    call add(invalids, win_getid(i))
+    1              0.000001       endif
+    2              0.000004     endfor
+    1              0.000001   endif
+    1              0.000003   for id in invalids
+                                call coc#float#close(id)
+    1              0.000002   endfor
+
+FUNCTION  coc#util#cursor()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/autoload/coc/util.vim line 35
+Called 7 times
+Total time:   0.000244
+ Self time:   0.000244
+
+count  total (s)   self (s)
+    7              0.000221   return [line('.') - 1, strchars(strpart(getline('.'), 0, col('.') - 1))]
+
+FUNCTION  coc#float#get_related()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/autoload/coc/float.vim line 1207
+Called 20 times
+Total time:   0.000499
+ Self time:   0.000499
+
+count  total (s)   self (s)
+   20              0.000209   for winid in getwinvar(a:winid, 'related', [])
+                                if getwinvar(winid, 'kind', '') ==# a:kind
+                                  return winid
+                                endif
+   20              0.000046   endfor
+   20              0.000041   return 0
+
+FUNCTION  coc#_hide()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/autoload/coc.vim line 97
+Called 1 time
+Total time:   0.000009
+ Self time:   0.000009
+
+count  total (s)   self (s)
+    1              0.000008   if !pumvisible() | return | endif
+                              call feedkeys("\<C-e>", 'in')
+
+FUNCTION  GetPugIndent()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/indent/pug.vim line 33
+Called 2 times
+Total time:   0.001054
+ Self time:   0.001054
+
+count  total (s)   self (s)
+    2              0.000011   let lnum = prevnonblank(v:lnum-1)
+    2              0.000004   if lnum == 0
+                                return 0
+    2              0.000002   endif
+    2              0.000025   let line = substitute(getline(lnum),'\s\+$','','')
+    2              0.000036   let cline = substitute(substitute(getline(v:lnum),'\s\+$','',''),'^\s\+','','')
+    2              0.000008   let lastcol = strlen(line)
+    2              0.000018   let line = substitute(line,'^\s\+','','')
+    2              0.000008   let indent = indent(lnum)
+    2              0.000008   let cindent = indent(v:lnum)
+    2              0.000012   let increase = indent + &sw
+    2              0.000006   if indent == indent(lnum)
+    2              0.000008     let indent = cindent <= indent ? -1 : increase
+    2              0.000002   endif
+                            
+    2              0.000644   let group = synIDattr(synID(lnum,lastcol,1),'name')
+                            
+    2              0.000013   if line =~ '^!!!'
+                                return indent
+    2              0.000019   elseif line =~ '^/\%(\[[^]]*\]\)\=$'
+                                return increase
+    2              0.000041   elseif line =~ '^\%(if\|else\|unless\|for\|each\|block\|mixin\|append\|case\|when\)'
+                                return increase
+    2              0.000043   elseif line =~ '^'.s:tag.'[&!]\=[=~-].*,\s*$'
+                                return increase
+    2              0.000004   elseif line == '-#'
+                                return increase
+    2              0.000031   elseif line =~? '^\v%('.g:pug_self_closing_tags.')>'
+                                return indent
+    2              0.000063   elseif group =~? '\v^%(pugAttributesDelimiter|pugClass|pugId|htmlTagName|htmlSpecialTagName|pugFilter|pugTagBlockChar)$'
+    2              0.000004     return increase
+                              else
+                                return indent
+                              endif
+
+FUNCTION  111()
+    Defined: /usr/local/Cellar/neovim/0.4.4/share/nvim/runtime/autoload/provider/clipboard.vim line 142
+Called 3 times
+Total time:   0.056688
+ Self time:   0.000241
+
+count  total (s)   self (s)
+    3              0.000016   if a:reg == '"'
+                                call s:clipboard.set(a:lines,a:regtype,'+')
+                                if s:copy['*'] != s:copy['+']
+                                  call s:clipboard.set(a:lines,a:regtype,'*')
+                                end
+                                return 0
+    3              0.000003   end
+                            
+    3              0.000024   if type(s:copy[a:reg]) == v:t_func
+                                call s:copy[a:reg](a:lines, a:regtype)
+                                return 0
+    3              0.000002   end
+                            
+    3              0.000008   if s:cache_enabled == 0
+    3   0.056544   0.000097     call s:try_cmd(s:copy[a:reg], a:lines)
+    3              0.000008     return 0
+                              end
+                            
+                              if s:selections[a:reg].owner > 0
+                                let prev_job = s:selections[a:reg].owner
+                              end
+                              let s:selections[a:reg] = copy(s:selection)
+                              let selection = s:selections[a:reg]
+                              let selection.data = [a:lines, a:regtype]
+                              let argv = split(s:copy[a:reg], " ")
+                              let selection.argv = argv
+                              let selection.detach = s:cache_enabled
+                              let selection.cwd = "/"
+                              let jobid = jobstart(argv, selection)
+                              if jobid > 0
+                                call jobsend(jobid, a:lines)
+                                call jobclose(jobid, 'stdin')
+                                let selection.owner = jobid
+                                let ret = 1
+                              else
+                                echohl WarningMsg
+                                echomsg 'clipboard: failed to execute: '.(s:copy[a:reg])
+                                echohl None
+                                let ret = 1
+                              endif
+                            
+                              " The previous provider instance should exit when the new one takes
+                              " ownership, but kill it to be sure we don't fill up the job table.
+                              if exists('prev_job')
+                                call timer_start(1000, {... -> jobwait([prev_job], 0)[0] == -1 && jobstop(prev_job)})
+                              endif
+                            
+                              return ret
+
+FUNCTION  coc#util#get_complete_option()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/autoload/coc/util.vim line 329
+Called 1 time
+Total time:   0.000804
+ Self time:   0.000804
+
+count  total (s)   self (s)
+    1              0.000013   let pos = getcurpos()
+    1              0.000007   let line = getline(pos[1])
+    1              0.000044   let input = matchstr(strpart(line, 0, pos[2] - 1), '\k*$')
+    1              0.000016   let col = pos[2] - strlen(input)
+    1              0.000621   let synname = synIDattr(synID(pos[1], col, 1), 'name')
+    1              0.000097   return { 'word': matchstr(strpart(line, col - 1), '^\k\+'), 'input': empty(input) ? '' : input, 'line': line, 'filetype': &filetype, 'filepath': expand('%:p'), 'bufnr': bufnr('%'), 'linenr': pos[1], 'colnr' : pos[2], 'col': col - 1, 'synname': synname, 'changedtick': b:changedtick, 'blacklist': get(b:, 'coc_suggest_blacklist', []),}
+
+FUNCTION  lightline#link()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/autoload/lightline.vim line 218
+Called 50 times
+Total time:   0.014681
+ Self time:   0.014681
+
+count  total (s)   self (s)
+   50              0.000860   let mode = get(s:lightline._mode_, a:0 ? a:1 : mode(), 'normal')
+   50              0.000191   if s:mode ==# mode
+   42              0.000080     return ''
+    8              0.000010   endif
+    8              0.000023   let s:mode = mode
+    8              0.000034   if !has_key(s:highlight, mode)
+                                call lightline#highlight(mode)
+    8              0.000006   endif
+    8              0.000175   let types = map(s:uniq(sort(filter(values(s:lightline.component_type), 'v:val !=# "raw"'))), '[v:val, 1]')
+   24              0.000135   for [p, l] in [['Left', len(s:lightline.active.left)], ['Right', len(s:lightline.active.right)]]
+   88              0.000328     for [i, t] in map(range(0, l), '[v:val, 0]') + types
+   72              0.000098       if i != l
+   56              0.002242         exec printf('hi link Lightline%s_active_%s Lightline%s_%s_%s', p, i, p, mode, i)
+   72              0.000058       endif
+  400              0.001393       for [j, s] in map(range(0, l), '[v:val, 0]') + types
+  328              0.000768         if i + 1 == j || t || s && i != l
+  152              0.005742           exec printf('hi link Lightline%s_active_%s_%s Lightline%s_%s_%s_%s', p, i, j, p, mode, i, j)
+  328              0.000219         endif
+  400              0.000238       endfor
+   88              0.000056     endfor
+   24              0.000033   endfor
+    8              0.000272   exec printf('hi link LightlineMiddle_active LightlineMiddle_%s', mode)
+    8              0.000015   return ''
+
+FUNCTION  coc#rpc#ready()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/autoload/coc/rpc.vim line 31
+Called 41 times
+Total time:   0.000540
+ Self time:   0.000540
+
+count  total (s)   self (s)
+   41              0.000307   if empty(s:client) || s:client['running'] == 0
+                                return 0
+   41              0.000034   endif
+   41              0.000050   return 1
+
+FUNCTION  lightline#mode()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/autoload/lightline.vim line 213
+Called 50 times
+Total time:   0.000417
+ Self time:   0.000417
+
+count  total (s)   self (s)
+   50              0.000369   return get(s:lightline.mode_map, mode(), '')
+
+FUNCTION  <SNR>70_try_cmd()
+    Defined: /usr/local/Cellar/neovim/0.4.4/share/nvim/runtime/autoload/provider/clipboard.vim line 37
+Called 3 times
+Total time:   0.056446
+ Self time:   0.000778
+
+count  total (s)   self (s)
+    3              0.000057   let argv = split(a:cmd, " ")
+    3   0.056266   0.000597   let out = systemlist(argv, (a:0 ? a:1 : ['']), 1)
+    3              0.000027   if v:shell_error
+                                if !exists('s:did_error_try_cmd')
+                                  echohl WarningMsg
+                                  echomsg "clipboard: error: ".(len(out) ? out[0] : v:shell_error)
+                                  echohl None
+                                  let s:did_error_try_cmd = 1
+                                endif
+                                return 0
+    3              0.000002   endif
+    3              0.000009   return out
+
+FUNCTION  <SNR>29_crend()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/plugin/endwise.vim line 149
+Called 1 time
+Total time:   0.000016
+ Self time:   0.000016
+
+count  total (s)   self (s)
+    1              0.000004   let n = ""
+    1              0.000008   if !exists("b:endwise_addition") || !exists("b:endwise_words") || !exists("b:endwise_syngroups")
+    1              0.000002     return n
+                              endif
+                              let synids = join(map(split(b:endwise_syngroups, ','), 'hlID(v:val)'), ',')
+                              let wordchoice = '\%('.substitute(b:endwise_words,',','\\|','g').'\)'
+                              if exists("b:endwise_pattern")
+                                let beginpat = substitute(b:endwise_pattern,'&',substitute(wordchoice,'\\','\\&','g'),'g')
+                              else
+                                let beginpat = '\<'.wordchoice.'\>'
+                              endif
+                              let lnum = line('.') - 1
+                              let space = matchstr(getline(lnum),'^\s*')
+                              let col  = match(getline(lnum),beginpat) + 1
+                              let word  = matchstr(getline(lnum),beginpat)
+                              let endword = substitute(word,'.*',b:endwise_addition,'')
+                              let y = n.endword."\<C-O>O"
+                              if exists("b:endwise_end_pattern")
+                                let endpat = '\w\@<!'.substitute(word, '.*', substitute(b:endwise_end_pattern, '\\', '\\\\', 'g'), '').'\w\@!'
+                              elseif b:endwise_addition[0:1] ==# '\='
+                                let endpat = '\w\@<!'.endword.'\w\@!'
+                              else
+                                let endpat = '\w\@<!'.substitute('\w\+', '.*', b:endwise_addition, '').'\w\@!'
+                              endif
+                              let synidpat  = '\%('.substitute(synids,',','\\|','g').'\)'
+                              if a:always
+                                return y
+                              elseif col <= 0 || synID(lnum,col,1) !~ '^'.synidpat.'$'
+                                return n
+                              elseif getline('.') !~# '^\s*#\=$'
+                                return n
+                              endif
+                              let line = s:mysearchpair(beginpat,endpat,synidpat)
+                              " even is false if no end was found, or if the end found was less
+                              " indented than the current line
+                              let even = strlen(matchstr(getline(line),'^\s*')) >= strlen(space)
+                              if line == 0
+                                let even = 0
+                              endif
+                              if !even && line == line('.') + 1
+                                return y
+                              endif
+                              if even
+                                return n
+                              endif
+                              return y
+
+FUNCTION  coc#_cancel()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/autoload/coc.vim line 102
+Called 1 time
+Total time:   0.000015
+ Self time:   0.000015
+
+count  total (s)   self (s)
+                              " hack for close pum
+    1              0.000003   if pumvisible()
+                                let g:coc#_context = {'start': 0, 'preselect': -1,'candidates': []}
+                                call feedkeys("\<Plug>CocRefresh", 'i')
+                                call coc#rpc#notify('stopCompletion', [])
+    1              0.000001   endif
+
+FUNCTION  <SNR>23_Autocmd()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/plugin/coc.vim line 228
+Called 41 times
+Total time:   0.006876
+ Self time:   0.000927
+
+count  total (s)   self (s)
+   41              0.000157   if !g:coc_workspace_initialized
+                                return
+   41              0.000043   endif
+   41   0.006530   0.000581   call coc#rpc#notify('CocAutocmd', a:000)
+
+FUNCTION  provider#clipboard#Call()
+    Defined: /usr/local/Cellar/neovim/0.4.4/share/nvim/runtime/autoload/provider/clipboard.vim line 195
+Called 3 times
+Total time:   0.056952
+ Self time:   0.000264
+
+count  total (s)   self (s)
+    3              0.000056   if get(s:, 'here', v:false)  " Clipboard provider must not recurse. #7184
+                                return 0
+    3              0.000006   endif
+    3              0.000018   let s:here = v:true
+    3              0.000005   try
+    3   0.056807   0.000119     return call(s:clipboard[a:method],a:args,s:clipboard)
+    3              0.000005   finally
+    3              0.000016     let s:here = v:false
+    3              0.000008   endtry
+
+FUNCTION  coc#float#nvim_refresh_scrollbar()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/autoload/coc/float.vim line 765
+Called 20 times
+Total time:   0.001137
+ Self time:   0.000638
+
+count  total (s)   self (s)
+   20   0.000930   0.000431   let id = coc#float#get_related(a:winid, 'scrollbar')
+   20              0.000076   if id && nvim_win_is_valid(id)
+                                call coc#float#nvim_scrollbar(a:winid)
+   20              0.000018   endif
+
+FUNCTION  coc#rpc#notify()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/autoload/coc/rpc.vim line 95
+Called 41 times
+Total time:   0.005949
+ Self time:   0.001273
+
+count  total (s)   self (s)
+   41   0.001027   0.000487   if !coc#rpc#ready()
+                                return ''
+   41              0.000026   endif
+   41   0.004728   0.000592   call s:client['notify'](a:method, a:args)
+   41              0.000059   return ''
+
+FUNCTION  GetVueIndent()
+    Defined: ~/.cache/dein/.cache/init.vim/.dein/indent/vue.vim line 43
+Called 2 times
+Total time:   0.001314
+ Self time:   0.000260
+
+count  total (s)   self (s)
+    2              0.000019   for language in s:languages
+    2              0.000097     let opening_tag_line = searchpair(language.pairs[0], '', language.pairs[1], 'bWr')
+                            
+    2              0.000005     if opening_tag_line
+    2   0.001101   0.000047       execute 'let indent = ' . get(language, 'indentexpr', -1)
+    2              0.000003       break
+                                endif
+    2              0.000005   endfor
+                            
+    2              0.000008   if exists('l:indent')
+    2              0.000042     if (opening_tag_line == prevnonblank(v:lnum - 1) || opening_tag_line == v:lnum) || getline(v:lnum) =~ '\v^\s*\</(script|style|template)'
+                                  return 0
+    2              0.000002     endif
+                              else
+                                " Couldn't find language, fall back to html
+                                execute 'let indent = ' . s:html_indent
+    2              0.000002   endif
+                            
+    2              0.000004   return indent
+
+FUNCTIONS SORTED ON TOTAL TIME
+count  total (s)   self (s)  function
+    3   0.056952   0.000264  provider#clipboard#Call()
+    3   0.056688   0.000241  111()
+    3   0.056446   0.000778  <SNR>70_try_cmd()
+   50   0.014681             lightline#link()
+   41   0.006876   0.000927  <SNR>23_Autocmd()
+   41   0.005949   0.001273  coc#rpc#notify()
+   41   0.004136   0.003787  <SNR>26_notify()
+    2   0.001314   0.000260  GetVueIndent()
+   20   0.001137   0.000638  coc#float#nvim_refresh_scrollbar()
+    2   0.001054             GetPugIndent()
+    1   0.000804             coc#util#get_complete_option()
+   41   0.000540             coc#rpc#ready()
+   20   0.000499             coc#float#get_related()
+   50   0.000417             lightline#mode()
+   41   0.000349             coc#client#get_channel()
+    7   0.000244             coc#util#cursor()
+    1   0.000131             coc#float#check_related()
+    1   0.000016             <SNR>29_crend()
+    1   0.000015             coc#_cancel()
+    1   0.000009             coc#_hide()
+
+FUNCTIONS SORTED ON SELF TIME
+count  total (s)   self (s)  function
+   50              0.014681  lightline#link()
+   41   0.004136   0.003787  <SNR>26_notify()
+   41   0.005949   0.001273  coc#rpc#notify()
+    2              0.001054  GetPugIndent()
+   41   0.006876   0.000927  <SNR>23_Autocmd()
+    1              0.000804  coc#util#get_complete_option()
+    3   0.056446   0.000778  <SNR>70_try_cmd()
+   20   0.001137   0.000638  coc#float#nvim_refresh_scrollbar()
+   41              0.000540  coc#rpc#ready()
+   20              0.000499  coc#float#get_related()
+   50              0.000417  lightline#mode()
+   41              0.000349  coc#client#get_channel()
+    3   0.056952   0.000264  provider#clipboard#Call()
+    2   0.001314   0.000260  GetVueIndent()
+    7              0.000244  coc#util#cursor()
+    3   0.056688   0.000241  111()
+    1              0.000131  coc#float#check_related()
+    1              0.000016  <SNR>29_crend()
+    1              0.000015  coc#_cancel()
+    1              0.000009  coc#_hide()
+

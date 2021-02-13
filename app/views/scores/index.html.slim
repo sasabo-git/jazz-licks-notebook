@@ -1,17 +1,18 @@
-.container
-  p#notice
-    = notice
-  nav.level.mt-4
-    .level-left
-      .level-item
-        .title
-          | 一覧
-    .level-right
-      p.level-item
-        = button_to '新規作成', new_score_path , method: :get, class: "button is-warning has-text-black has-text-weight-bold"
-  - if @scores.exists?
-    #js-index-score(data-first-measure="#{true}")
-  - else
-    .columns
-      .column
-        | まだスコアが登録されていません
+section.section
+  .container
+    p#notice
+      = notice
+    nav.level.mt-4
+      .level-left
+        .level-item
+          .title
+            | 一覧
+      .level-right
+        p.level-item
+          = button_to '新規作成', new_score_path , method: :get, class: "button is-warning has-text-black has-text-weight-bold"
+    - if @scores.exists?
+      #js-index-score(data-first-measure="#{true}")
+    - else
+      .columns
+        .column
+          | まだスコアが登録されていません
