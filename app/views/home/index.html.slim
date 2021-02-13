@@ -7,6 +7,8 @@ section.hero
         | 楽譜がテキストだけで作れて管理できるサービス
       .columns.is-centered
         .column.is-6
-          = button_to 'アカウント登録してフレーズを管理する', new_user_registration_path, method: :get, class: "button is-warning has-text-weight-bold is-fullwidth has-text-black"
+          = button_to 'アカウント登録', new_user_registration_path, method: :get, class: "button is-warning has-text-weight-bold has-text-black"
+      p.caution
+        | ※アカウント登録なしでも譜面の作成はできますが作成した譜面の一覧参照などの管理機能が使用できません
 .container
   #js-form-score(data-score-id="new", user-signed-in="#{user_signed_in?}")

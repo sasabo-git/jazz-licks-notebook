@@ -90,8 +90,8 @@ export default {
           return response.json()
         })
         .then((score) => {
-          var header = ''
-          var body = ''
+          let header = ''
+          let body = ''
           const self = this
           Object.keys(score).forEach(function (key) {
             if (score[key]) {
@@ -133,8 +133,8 @@ export default {
 
     setTuneElements: function (abcjs) {
       const elements = abcjs.split('\n')
-      var body = ''
-      var newLineFlag = false
+      let body = ''
+      let newLineFlag = false
       const self = this
       elements.forEach(function (element) {
         // ここは関数化できそう

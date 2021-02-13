@@ -60,10 +60,10 @@ export default {
 
   computed: {
     guideTone: function () {
-      var guideTones = []
+      let guideTones = []
       if (this.chordProgression.length !== '' && this.checkedGuides.length) {
         this.chords.forEach((code) => {
-          var guideTone = code
+          let guideTone = code
           this.checkedGuides.forEach((guide) => {
             guideTone += this.availableNote(code, guide)
           })
@@ -86,14 +86,14 @@ export default {
 
   methods: {
     availableNote: function (code, toneName) {
-      var octaveUp = false
+      let octaveUp = false
       const keynote = code.match(/[A-Z]/g).join('')
       const diatonic = this.sortByKey(config.SEVENTONES, this.keynote)
       const scales = this.sortByKey(diatonic, keynote).map(function (tone, i) {
         if (i > 0 && tone === 'C') octaveUp = true
         return octaveUp ? tone.toLowerCase() : tone
       })
-      var availableNote = ''
+      let availableNote = ''
       switch (toneName) {
         case 'chordTone':
           availableNote = `${scales[0]}${scales[2]}${scales[4]}${scales[6]}`
