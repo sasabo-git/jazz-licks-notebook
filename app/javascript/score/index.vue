@@ -72,8 +72,8 @@ export default {
         })
     },
     toAbcString: function (score, firstLine = false) {
-      var header = ''
-      var body = ''
+      let header = ''
+      let body = ''
       header += 'X:1\n'
       Object.keys(score).forEach(function (key) {
         if (score[key]) {
@@ -89,7 +89,7 @@ export default {
               break
             case 'body':
               if (firstLine) {
-                var lines = score[key].split('\n')
+                let lines = score[key].split('\n')
                 body = lines[0]
               } else {
                 body = `${score[key]}\n`

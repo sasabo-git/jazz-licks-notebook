@@ -4,7 +4,7 @@ import IndexScore from './index.vue'
 document.addEventListener('DOMContentLoaded', () => {
   const score = document.getElementById('js-index-score')
   if (score) {
-    var firstLine = score.getAttribute('data-first-measure')
+    let firstLine = score.getAttribute('data-first-measure')
     firstLine = firstLine === 'true'
     new Vue({
       render: (h) =>

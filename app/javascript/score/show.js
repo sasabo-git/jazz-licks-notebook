@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const score = document.getElementById('js-show-score')
   if (score) {
     const scoreId = score.getAttribute('data-score-id')
-    var firstLine = score.getAttribute('data-first-measure')
+    let firstLine = score.getAttribute('data-first-measure')
     firstLine = firstLine === 'true'
     new Vue({
       render: (h) =>

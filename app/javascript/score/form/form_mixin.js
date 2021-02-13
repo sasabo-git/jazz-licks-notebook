@@ -3,7 +3,7 @@ import config from './form_const'
 export default {
   computed: {
     chords: function () {
-      var chords = []
+      let chords = []
       switch (this.chordProgression) {
         case '':
         case 'free':
@@ -20,7 +20,7 @@ export default {
     },
 
     twoFive: function () {
-      var target = []
+      let target = []
       if (this.twelveTones.length) {
         target.push(`"${this.twelveTones[7]}7"`)
         if (this.isMajor()) {
@@ -40,7 +40,7 @@ export default {
 
     key: {
       get: function () {
-        var key = ''
+        let key = ''
         if (this.keynote && this.tonality) {
           if (this.isMajor()) {
             key = this.keynote
@@ -55,7 +55,7 @@ export default {
 
   methods: {
     sortByKey: function (tones, keynote) {
-      var target = []
+      let target = []
       const index = tones.indexOf(keynote)
       target = tones.slice(index).concat(tones.slice(0, index))
       return target

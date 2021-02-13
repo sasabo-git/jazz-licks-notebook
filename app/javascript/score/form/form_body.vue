@@ -77,8 +77,7 @@ export default {
   computed: {
     tune: {
       get: function () {
-        var target =
-          // `T:${this.title}\n` +
+        let target =
           `K:${this.key}\n` +
           `M:${this.meter}\n` +
           `L:1/${this.noteLength}\n` +
@@ -90,10 +89,10 @@ export default {
 
     body: {
       get: function () {
-        var target = []
+        let target = []
         target = this.melody.replace(/".*?"/g, '').split('|')
         if (this.chords.length) {
-          var length = Math.min(target.length, this.chords.length)
+          let length = Math.min(target.length, this.chords.length)
           for (let i = 0; i < length; i++) {
             target[i] = this.chords[i] + target[i]
           }
@@ -147,8 +146,8 @@ export default {
   methods: {
     async saveOrUpdate() {
       const self = this
-      var id = ''
-      var method = 'POST'
+      let id = ''
+      let method = 'POST'
       if (self.scoreId !== 'new') {
         id = `${self.scoreId}`
         method = 'PUT'
