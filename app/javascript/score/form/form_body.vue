@@ -28,6 +28,7 @@
             textarea(readonly)#abc-source(v-model='tune').is-hidden
             #midi
             #paper
+    explain-abc
     guide(:chordProgression='chordProgression', :keynote='store.states.keynote', :tonality='tonality', v-show="chordProgression !== 'free'")
     nav.save-button.level-center
       .level-item
