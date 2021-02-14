@@ -14,15 +14,15 @@
               | メロディー
             p.control
               textarea(v-model='melody', class="textarea", rows="4")
-          .bpm.field.field
+          .bpm.field
             label.label
               | テンポ
-            .columns.is-variable.is-1
-              p.control
-                .column
-                  input(v-model='bpm').input.is-small
-                .column.mt-1
-                  | bpm
+            .columns.is-vcentered.is-variable.is-1
+              .column
+                p.control
+                  input(v-model='bpm').input
+              .column
+                | bpm
         .column
           p.abc-paper
             textarea(readonly)#abc-source(v-model='tune').is-hidden
