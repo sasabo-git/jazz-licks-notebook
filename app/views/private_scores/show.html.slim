@@ -1,0 +1,16 @@
+section.section
+  .container
+    h1.title
+      = @private_score.title
+    .caution.mb-3
+      p 次にこのページを見たい場合はURLをコピーして保管してください。
+      p アドレスに本URLを入れることで本ページを見ることができます。
+    .score
+      #js-show-private-score(data-score-id="#{@private_score.id}", data-first-measure="#{false}")
+    .memo
+      - if @private_score.memo.present?
+        .box.mt-4
+          .subtitle
+            | メモ
+          .text
+            = @private_score.memo

@@ -43,11 +43,12 @@
           label.label
             | 基本音符長
         .field-body
-          .field.is-narrow
-            p.control
-              input(v-model='noteLength').input
-          .hoge.mt-2
-            | 分音符
+          .columns.is-vcentered.is-variable.is-1
+            .column
+              p.control
+                input(v-model='noteLength').input
+            .column
+              | 分音符
       .chord-progression.field.is-horizontal
         .field-label.is-normal
           label.label

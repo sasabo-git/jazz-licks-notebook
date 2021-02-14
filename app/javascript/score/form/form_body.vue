@@ -14,24 +14,27 @@
               | メロディー
             p.control
               textarea(v-model='melody', class="textarea", rows="4")
-          .bpm.field.field
+          .bpm.field
             label.label
               | テンポ
-            .columns.is-variable.is-1
-              p.control
-                .column
-                  input(v-model='bpm').input.is-small
-                .column.mt-1
-                  | bpm
+            .columns.is-vcentered.is-variable.is-1
+              .column
+                p.control
+                  input(v-model='bpm').input
+              .column
+                | bpm
         .column
           p.abc-paper
             textarea(readonly)#abc-source(v-model='tune').is-hidden
             #midi
             #paper
+    explain-abc
     guide(:chordProgression='chordProgression', :keynote='store.states.keynote', :tonality='tonality', v-show="chordProgression !== 'free'")
     nav.save-button.level-center
       .level-item
-        button(v-if="userSignedIn" @click="saveOrUpdate" type="button").button.is-warning.has-text-black.has-text-weight-bold
+        button(v-if="userSignedIn" @click="saveOrUpdate()" type="button").button.is-warning.has-text-black.has-text-weight-bold
+          | 保存する
+        button(v-else @click="saveOrUpdate(true)" type="button").button.is-warning.has-text-black.has-text-weight-bold
           | 保存する
 </template>
 
@@ -144,10 +147,11 @@ export default {
   },
 
   methods: {
-    async saveOrUpdate() {
+    async saveOrUpdate(isPrivate) {
       const self = this
       let id = ''
       let method = 'POST'
+      const scoresOrPravateScores = isPrivate? 'private_scores' : 'scores'
       if (self.scoreId !== 'new') {
         id = `${self.scoreId}`
         method = 'PUT'
@@ -165,7 +169,7 @@ export default {
         chord_progression: self.chordProgression, // eslint-disable-line camelcase
         memo: self.memo,
       }
-      await fetch(`/api/scores/${id}`, {
+      await fetch(`/api/${scoresOrPravateScores}/${id}`, {
         method: `${method}`,
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
@@ -177,6 +181,7 @@ export default {
         body: JSON.stringify(params),
       })
         .then((response) => {
+          console.log(response)
           return self.scoreId === 'new' ? response.json() : response
         })
         .catch((error) => {
@@ -184,7 +189,7 @@ export default {
         })
         .then((data) => {
           if (!id) id = data.id
-          location.href = `/scores/${id}`
+          location.href = `/${scoresOrPravateScores}/${id}`
         })
     },
 

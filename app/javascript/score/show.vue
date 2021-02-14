@@ -28,6 +28,7 @@ export default {
   props: {
     scoreId: { type: String, required: true },
     firstLine: { type: Boolean, required: true },
+    privateScore: { type: Boolean },
   },
   data() {
     return {
@@ -41,11 +42,12 @@ export default {
     }, 100),
   },
   async created() {
-    await this.setScore()
+    await this.setScore(this.privateScore)
   },
   methods: {
-    async setScore() {
-      await fetch(`/api/scores/${this.scoreId}.json`, {
+    async setScore(isPrivate = false) {
+      const scoresOrPravateScores = isPrivate? 'private_scores' : 'scores'
+      await fetch(`/api/${scoresOrPravateScores}/${this.scoreId}.json`, {
         method: 'GET',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
@@ -85,9 +87,6 @@ export default {
       Object.keys(score).forEach(function (key) {
         if (score[key]) {
           switch (key) {
-            case 'title':
-              if (!firstLine) header += `T:${score[key]}\n`
-              break
             case 'key':
               header += `K:${score[key]}\n`
               break

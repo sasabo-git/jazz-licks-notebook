@@ -52,8 +52,8 @@ export default {
       ],
 
       checkedGuides: [],
-      show: true,
-      showOrHide: '非表示',
+      show: false,
+      showOrHide: '表示',
       guide: {},
     }
   },
